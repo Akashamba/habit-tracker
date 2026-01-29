@@ -24,8 +24,8 @@
 
 ### Roadmap
 
-[ ] set up db, auth, hosting
-[ ] finalize a UI, schema, and api endpoints with data signature
-[ ] set up rough trpc outline that returns fake data or set up a seed script with fake data in db
-[ ] develop full UI using fake endpoints
-[ ] implement full backend
+- [ ] set up db, auth, hosting
+- [ ] finalize a UI, schema, and api endpoints with data signature
+- [ ] set up rough trpc outline that returns fake data or set up a seed script with fake data in db
+- [ ] develop full UI using fake endpoints
+- [ ] implement full backend
