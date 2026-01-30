@@ -11,6 +11,8 @@
 - settings can include habit type (daily, etc) and also fun things like theme color maybe
 - at a later stage, can add a kind of dashboard view to see all habits / stats at a glance
 
+- new idea: connect with notion: each green square represents an entry on a notion db that is a journal entry about how I fulfulled the habit that day
+
 ### Stack
 
 - nextjs
@@ -22,10 +24,35 @@
 - auth using google sso
 - hosted on vercel
 
-### Roadmap
+### Targeted features
+
+Iteration 1:
+
+- [ ] be able to create, view, delete habits (with confirmation modal)
+- [ ] make habit entries
+
+Iteration 2:
+
+- [ ] habit types and theme colors
+
+Iteration 3:
+
+- [ ] connect with notion
+
+### Roadmap for above features
 
 - [ ] set up db, auth, hosting
+- [ ] deploy pipelines set up, basic ci/cd for lint and typechecks
 - [ ] finalize a UI, schema, and api endpoints with data signature
 - [ ] set up rough trpc outline that returns fake data or set up a seed script with fake data in db
-- [ ] develop full UI using fake endpoints
-- [ ] implement full backend
+- [ ] develop UI using fake endpoints
+- [ ] implement backend
+
+# Daily logs
+
+## Tasks for Jan 29
+
+- [ ] set up db for habits project on neon and deploy to vercel (30 mins)
+- [ ] set up auth for habits project (15 mins)
+- [ ] ci/cd lint and typechecks (try to copy from monopay project) (15 mins)
+- [ ] finalize UI on figma, make rough sketch of api endpoints (1 hour)
