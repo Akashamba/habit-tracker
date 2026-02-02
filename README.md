@@ -28,7 +28,7 @@
 
 Iteration 1:
 
-- [ ] be able to create, view, delete habits (with confirmation modal)
+- [ ] Habit actions: create (with moda or inline), view, delete (with confirmation modal)
 - [ ] make habit entries
 
 Iteration 2:
@@ -41,8 +41,8 @@ Iteration 3:
 
 ### Roadmap for above features
 
-- [ ] set up db, auth, hosting
-- [ ] deploy pipelines set up, basic ci/cd for lint and typechecks
+- [x] set up db, auth, hosting
+- [x] deploy pipelines
 - [ ] finalize a UI, schema, and api endpoints with data signature
 - [ ] set up rough trpc outline that returns fake data or set up a seed script with fake data in db
 - [ ] develop UI using fake endpoints
@@ -54,5 +54,13 @@ Iteration 3:
 
 - [x] set up db for habits project on neon and deploy to vercel (30 mins)
 - [x] set up auth for habits project (15 mins)
-- [ ] finalize UI on figma, make rough sketch of api endpoints (1 hour)
-- [ ] try to make better auth sign in on server as implemented in create-t3-app template
+
+## Tasks for Feb 2
+
+- [x] try to make better auth sign in on server as implemented in create-t3-app template
+- [x] finalize UI on figma
+
+## Tasks for Feb 3
+
+- [ ] make rough sketch of api endpoints
+- [ ] set up rough trpc outline that returns fake data or set up a seed script with fake data in db
