@@ -62,5 +62,6 @@ Iteration 3:
 
 ## Tasks for Feb 3
 
-- [ ] make rough sketch of api endpoints
-- [ ] set up rough trpc outline that returns fake data or set up a seed script with fake data in db
+- [ ] make rough sketch of schema and api endpoints
+- [ ] set up rough trpc routers that return fake data
+- [ ] set up a seed script with fake data in db
