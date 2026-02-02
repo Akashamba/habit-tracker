@@ -54,6 +54,5 @@ Iteration 3:
 
 - [x] set up db for habits project on neon and deploy to vercel (30 mins)
 - [x] set up auth for habits project (15 mins)
-- [ ] ci/cd lint and typechecks (try to copy from monopay project) (15 mins)
 - [ ] finalize UI on figma, make rough sketch of api endpoints (1 hour)
 - [ ] try to make better auth sign in on server as implemented in create-t3-app template
