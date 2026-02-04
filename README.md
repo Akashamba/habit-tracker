@@ -13,6 +13,31 @@
 
 - new idea: connect with notion: each green square represents an entry on a notion db that is a journal entry about how I fulfulled the habit that day
 
+### Feb 4: what does the habit completions heatmap look like
+
+- Stay as close to github's implementation as possible
+- show months, no days
+- show last 365 days only.
+
+#### store and retrieve habit completions from db
+
+- initial idea was to store completions as a binary string (eg: "01011110101111") as a column in the habit table
+- while this will probably work forever for my scale, I want to build something ready for large scale anyway.
+
+_Production Ready Approach:_
+
+- A dedicated table for `Habit_Completions`
+- Stores completion events in the form "User X completed Habit Y on Date Z", ensuring that there can only be one entry for a habit on a day by the user.
+- Retrieve completions of a user as "Get all completion dates (limited to the last 365 days) by User X for Habit Y"
+- Not sure yet how I will parse this data and then feed it into the heatmap, probably with a map like ({"2026-02-04": true})
+
+#### calculating streaks
+
+- moving streaks to next iteration
+- simple implementation idea to add streaks with undo: https://www.notion.so/akashamba/Habit-Tracker-app-2f75aa83c5cb8044a2e9d71af69d1a98?source=copy_link#2fd5aa83c5cb805d9b8df02963a85e0f
+
+---
+
 ### Stack
 
 - nextjs
@@ -26,18 +51,26 @@
 
 ### Targeted features
 
-Iteration 1:
+Iteration 1: (deadline Friday, Feb 6)
 
-- [ ] Habit actions: create (with moda or inline), view, delete (with confirmation modal)
+- [ ] Habit actions: create (with modal or inline), view, delete (with confirmation modal)
 - [ ] make habit entries
+
+Iteration 1.5: (deadline Sunday, Feb 8)
+
+- [ ] streaks
 
 Iteration 2:
 
-- [ ] habit types and theme colors
+- [ ] Habit settings menu (with card flipping animation)
+- [ ] habit types/frequency
+- [ ] theme colors
+- [ ] Archive habits
 
 Iteration 3:
 
-- [ ] connect with notion
+- [ ] connect with notion to make journal entries about each completion
+- [ ] email reminders
 
 ### Roadmap for above features
 
@@ -47,6 +80,26 @@ Iteration 3:
 - [ ] set up rough trpc outline that returns fake data or set up a seed script with fake data in db
 - [ ] develop UI using fake endpoints
 - [ ] implement backend
+
+## Schema
+
+User ( _cretaed by better-auth already_ )
+
+Habit (
+id: uuid, primary_key,
+user_id: uuid, foreign_key,
+name: string,
+created_date: date,
+updated_date: date,
+)
+
+Habit_Completions (
+id: uuid, primary_key,
+habit_id: uuid, foreign_key,
+completed_at: timestamp,
+timezone: IANA timezone string,
+)
+Index: UNIQUE(user_id, habit_id, date)
 
 # Daily logs
 
@@ -60,8 +113,9 @@ Iteration 3:
 - [x] try to make better auth sign in on server as implemented in create-t3-app template
 - [x] finalize UI on figma
 
-## Tasks for Feb 3
+## Tasks for Feb 4
 
-- [ ] make rough sketch of schema and api endpoints
+- [x] make rough sketch of schema
+- [ ] make rough sketch of api endpoints
 - [ ] set up rough trpc routers that return fake data
 - [ ] set up a seed script with fake data in db
