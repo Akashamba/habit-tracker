@@ -65,7 +65,9 @@ Iteration 2:
 - [ ] Habit settings menu (with card flipping animation)
 - [ ] habit types/frequency
 - [ ] theme colors
+- [ ] Reorder habits
 - [ ] Archive habits
+- [ ] Batch features (batch complete, delete)
 
 Iteration 3:
 
@@ -96,10 +98,29 @@ updated_date: date,
 Habit_Completions (
 id: uuid, primary_key,
 habit_id: uuid, foreign_key,
-completed_at: timestamp,
+completed_at: timestamp,tim
 timezone: IANA timezone string,
 )
 Index: UNIQUE(user_id, habit_id, date)
+
+## API Layer
+
+- GET: Fetch all habits (with completions)
+
+- POST: Create a new habit
+- - Params: habit_name
+
+- DELETE: Delete a habit
+- - Params: habit_id
+
+- POST: mark habit as complete
+- - Params: habit_id
+
+- POST: undo completion
+- - Params: habit_id
+
+- PATCH: update habit (rename now, later archive/unarchive, etc)
+- - Params: habit_id, new_name
 
 # Daily logs
 
