@@ -75,14 +75,17 @@ Iteration 3:
 - [ ] connect with notion to make journal entries about each completion
 - [ ] email reminders
 
+Iteration 4:
+
+- [ ] Social features: add friends, see their streaks, leaderboards, etc
+
 ### Roadmap for above features
 
 - [x] set up db, auth, hosting
 - [x] deploy pipelines
-- [ ] finalize a UI, schema, and api endpoints with data signature
-- [ ] set up rough trpc outline that returns fake data or set up a seed script with fake data in db
-- [ ] develop UI using fake endpoints
-- [ ] implement backend
+- [x] finalize a UI, schema, and api endpoints with data signature
+- [x] set up rough trpc router and seed db with fake data
+- [ ] develop UI
 
 ## Schema
 
