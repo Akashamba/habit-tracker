@@ -34,7 +34,7 @@ export default async function Home() {
     <HydrateClient>
       <div className="bg-linear-to-b from-[#2e026d] to-[#15162c]">
         <main className="m-auto flex min-h-screen max-w-sm flex-col items-center justify-center text-white">
-          Hello <b>{session?.user.name || "Not signed in"}</b>
+          Hello <b>{session?.user.name ?? "Not signed in"}</b>
           {session && (
             <form action={handleSignOut}>
               <button type="submit">Sign Out</button>

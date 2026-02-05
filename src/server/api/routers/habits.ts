@@ -1,12 +1,8 @@
 import z from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import {
-  habit,
-  habit_completions,
-  type HabitCompletion,
-} from "~/server/db/schema";
+import { habit, habit_completions } from "~/server/db/schema";
 import { TRPCError } from "@trpc/server";
-import { and, eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 export const habits = createTRPCRouter({
   createHabit: protectedProcedure
