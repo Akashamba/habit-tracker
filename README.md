@@ -68,6 +68,7 @@ Iteration 2:
 - [ ] Reorder habits
 - [ ] Archive habits
 - [ ] Batch features (batch complete, delete)
+- [ ] Timezone support for using across multiple regions
 
 Iteration 3:
 
@@ -91,17 +92,16 @@ Habit (
 id: uuid, primary_key,
 user_id: uuid, foreign_key,
 name: string,
-created_date: date,
-updated_date: date,
+created_at: timestamp,
+updated_at: timestamp,
 )
 
 Habit_Completions (
 id: uuid, primary_key,
 habit_id: uuid, foreign_key,
-completed_at: timestamp,tim
-timezone: IANA timezone string,
+completed_at: timestamp
 )
-Index: UNIQUE(user_id, habit_id, date)
+Index: UNIQUE(habit_id, date)
 
 ## API Layer
 

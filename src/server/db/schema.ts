@@ -1,24 +1,24 @@
-import { index } from "drizzle-orm/pg-core";
+import { text, uuid, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
 import { createTableWithPrefix } from "./create-table";
+import { sql } from "drizzle-orm";
 
-export const posts = createTableWithPrefix(
-  "post",
-  (d) => ({
-    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
-    name: d.varchar({ length: 256 }),
-    createdById: d
-      .varchar({ length: 255 })
-      .notNull()
-      .references(() => user.id),
-    createdAt: d
-      .timestamp({ withTimezone: true })
-      .$defaultFn(() => new Date())
-      .notNull(),
-    updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
+export const habit = createTableWithPrefix("habit", () => ({
+  id: uuid().primaryKey().defaultRandom(),
+  user_id: uuid().references(() => user.id),
+  name: text().notNull(),
+  created_at: timestamp().notNull().defaultNow(),
+  updated_at: timestamp().notNull().defaultNow(),
+}));
+
+export const habit_completions = createTableWithPrefix(
+  "habit_completions",
+  () => ({
+    id: uuid().primaryKey().defaultRandom(),
+    habit_id: uuid().references(() => habit.id),
+    completedAt: timestamp().notNull().defaultNow(),
   }),
-  (t) => [
-    index("created_by_idx").on(t.createdById),
-    index("name_idx").on(t.name),
+  (table) => [
+    uniqueIndex().on(table.habit_id, sql`DATE(${table.completedAt})`),
   ],
 );
