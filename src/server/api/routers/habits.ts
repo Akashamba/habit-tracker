@@ -146,4 +146,31 @@ export const habits = createTRPCRouter({
         });
       }
     }),
+
+  seedCompletions: protectedProcedure
+    .input(z.object({ habitId: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(habit_completions).values([
+        {
+          habit_id: input.habitId,
+          completedAt: new Date("2026-02-04T10:12:45.000Z"),
+        },
+        {
+          habit_id: input.habitId,
+          completedAt: new Date("2026-02-06T08:30:10.000Z"),
+        },
+        {
+          habit_id: input.habitId,
+          completedAt: new Date("2026-01-29T14:05:00.000Z"),
+        },
+        {
+          habit_id: input.habitId,
+          completedAt: new Date("2026-01-31T19:20:15.000Z"),
+        },
+        {
+          habit_id: input.habitId,
+          completedAt: new Date("2026-02-01T07:45:30.000Z"),
+        },
+      ]);
+    }),
 });
