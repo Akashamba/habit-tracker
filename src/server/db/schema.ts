@@ -19,6 +19,9 @@ export const habit_completions = createTableWithPrefix(
     completedAt: timestamp().notNull().defaultNow(),
   }),
   (table) => [
-    uniqueIndex().on(table.habit_id, sql`DATE(${table.completedAt})`),
+    uniqueIndex("habit_day_unique").on(
+      table.habit_id,
+      sql`DATE(${table.completedAt})`,
+    ),
   ],
 );
