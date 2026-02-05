@@ -5,7 +5,9 @@ import { sql } from "drizzle-orm";
 
 export const habit = createTableWithPrefix("habit", () => ({
   id: uuid().primaryKey().defaultRandom(),
-  user_id: uuid().references(() => user.id),
+  user_id: uuid()
+    .references(() => user.id)
+    .notNull(),
   name: text().notNull(),
   created_at: timestamp().notNull().defaultNow(),
   updated_at: timestamp().notNull().defaultNow(),
@@ -15,7 +17,9 @@ export const habit_completions = createTableWithPrefix(
   "habit_completions",
   () => ({
     id: uuid().primaryKey().defaultRandom(),
-    habit_id: uuid().references(() => habit.id),
+    habit_id: uuid()
+      .references(() => habit.id)
+      .notNull(),
     completedAt: timestamp().notNull().defaultNow(),
   }),
   (table) => [
