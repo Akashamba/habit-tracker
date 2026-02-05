@@ -4,23 +4,23 @@ import { createTableWithPrefix } from "./create-table";
 import { sql } from "drizzle-orm";
 
 export const habit = createTableWithPrefix("habit", () => ({
-  id: uuid().primaryKey().defaultRandom(),
-  user_id: uuid()
-    .references(() => user.id)
+  id: uuid("id").primaryKey().defaultRandom(),
+  user_id: text("user_id")
+    .references(() => user.id, { onDelete: "cascade" })
     .notNull(),
-  name: text().notNull(),
-  created_at: timestamp().notNull().defaultNow(),
-  updated_at: timestamp().notNull().defaultNow(),
+  name: text("name").notNull(),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
 }));
 
 export const habit_completions = createTableWithPrefix(
   "habit_completions",
   () => ({
-    id: uuid().primaryKey().defaultRandom(),
-    habit_id: uuid()
-      .references(() => habit.id)
+    id: uuid("id").primaryKey().defaultRandom(),
+    habit_id: uuid("habit_id")
+      .references(() => habit.id, { onDelete: "cascade" })
       .notNull(),
-    completedAt: timestamp().notNull().defaultNow(),
+    completedAt: timestamp("completed_at").notNull().defaultNow(),
   }),
   (table) => [
     uniqueIndex("habit_day_unique").on(
