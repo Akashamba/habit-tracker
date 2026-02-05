@@ -137,6 +137,13 @@ Index: UNIQUE(habit_id, date)
 ## Tasks for Feb 4
 
 - [x] make rough sketch of schema
-- [ ] make rough sketch of api endpoints
-- [ ] set up rough trpc routers that return fake data
-- [ ] set up a seed script with fake data in db
+- [x] make rough sketch of api endpoints
+
+## Tasks for Feb 5
+
+- [x] set up trpc router
+- [x] set up a seed script with fake data in db
+
+# Known Issues
+
+- [ ] db push when there are tables already fails because of the sql expression column in the UNIQUE constraint of the habit_completions schema
