@@ -2,7 +2,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "~/server/better-auth";
 import { getSession } from "~/server/better-auth/server";
-import { HydrateClient } from "~/trpc/server";
+import { api, HydrateClient } from "~/trpc/server";
+import Habits from "./components/habits";
 
 export default async function Home() {
   const session = await getSession();
@@ -32,21 +33,21 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <div className="bg-linear-to-b from-[#2e026d] to-[#15162c]">
-        <main className="m-auto flex min-h-screen max-w-sm flex-col items-center justify-center text-white">
-          Hello <b>{session?.user.name ?? "Not signed in"}</b>
-          {session && (
-            <form action={handleSignOut}>
-              <button type="submit">Sign Out</button>
-            </form>
-          )}
-          {!session && (
-            <form action={handleSignIn}>
-              <button type="submit">Sign In</button>
-            </form>
-          )}
-        </main>
-      </div>
+      <main>
+        <nav className="flex w-100 justify-evenly">
+          <div className="logo">X</div>
+          <div className="title">Habits</div>
+          <div className="user-logo">X</div>
+        </nav>
+
+        <div className="quick-menu m-5 flex gap-3 overflow-scroll">
+          <button className="border border-black p-2">Option 1</button>
+          <button className="border border-black p-2">Option 2</button>
+          <button className="border border-black p-2">Option 3</button>
+        </div>
+
+        <Habits />
+      </main>
     </HydrateClient>
   );
 }

@@ -155,6 +155,9 @@ Index: UNIQUE(habit_id, date)
 
 - [x] set up trpc router
 - [x] set up a seed script with fake data in db
+- [ ] scaffold UI (everything except heatmap component)
+- [ ] style with css
+- [ ] make heatmap component
 
 # Known Issues
 
