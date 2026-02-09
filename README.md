@@ -68,7 +68,7 @@ Iteration 1.5: (deadline Sunday, Feb 8)
 
 - [ ] encrypt access tokens
 - [ ] streaks
-- [ ] squares for current day only show up on the day, like github
+- [ ] squares for current day only show up on current the day, like github
 
 Iteration 2:
 
@@ -156,9 +156,13 @@ Index: UNIQUE(habit_id, date)
 
 - [x] set up trpc router
 - [x] set up a seed script with fake data in db
-- [ ] scaffold UI (everything except heatmap component)
-- [ ] style with css
-- [ ] make heatmap component
+- [x] scaffold UI (everything except heatmap component)
+
+## Tasks for Feb 9
+
+- [x] make ui for heatmap component
+- [ ] figure out how to parse completion data to render it in the heatmap ui
+- [ ] style everything with css
 
 # Known Issues
 

@@ -40,7 +40,6 @@ export const habits = createTRPCRouter({
           habit_completions: true,
         },
       });
-      //   TODO: get completions for each habit as well
 
       console.log(`Retrieved ${habits.length} habits`);
       console.log(habits[0]);
