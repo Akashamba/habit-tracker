@@ -68,6 +68,7 @@ Iteration 1.5: (deadline Sunday, Feb 8)
 
 - [ ] encrypt access tokens
 - [ ] streaks
+- [ ] squares for current day only show up on the day, like github
 
 Iteration 2:
 

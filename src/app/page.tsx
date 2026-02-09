@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "~/server/better-auth";
 import { getSession } from "~/server/better-auth/server";
 import { api, HydrateClient } from "~/trpc/server";
-import Habits from "./components/habits";
+import HabitsContainer from "./components/habits-container";
 
 export default async function Home() {
   const session = await getSession();
@@ -34,7 +34,7 @@ export default async function Home() {
   return (
     <HydrateClient>
       <main>
-        <nav className="flex w-100 justify-evenly">
+        <nav className="flex w-screen justify-evenly">
           <div className="logo">X</div>
           <div className="title">Habits</div>
           <div className="user-logo">X</div>
@@ -46,7 +46,7 @@ export default async function Home() {
           <button className="border border-black p-2">Option 3</button>
         </div>
 
-        <Habits />
+        <HabitsContainer />
       </main>
     </HydrateClient>
   );
