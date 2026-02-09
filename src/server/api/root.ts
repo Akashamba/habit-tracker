@@ -1,5 +1,5 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
-import { habits } from "./routers/habits";
+import { habits } from "./routers/habits-router";
 
 /**
  * This is the primary router for your server.

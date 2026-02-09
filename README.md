@@ -67,6 +67,7 @@ Iteration 1: (deadline Friday, Feb 6)
 Iteration 1.5: (deadline Sunday, Feb 8)
 
 - [ ] encrypt access tokens
+- [ ] optimize indexes
 - [ ] streaks
 - [ ] squares for current day only show up on current the day, like github
 
@@ -161,7 +162,7 @@ Index: UNIQUE(habit_id, date)
 ## Tasks for Feb 9
 
 - [x] make ui for heatmap component
-- [ ] figure out how to parse completion data to render it in the heatmap ui
+- [x] parse completion data to render it in the heatmap ui
 - [ ] style everything with css
 
 # Known Issues

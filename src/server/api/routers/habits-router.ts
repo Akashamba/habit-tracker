@@ -37,14 +37,27 @@ export const habits = createTRPCRouter({
       const habits = await ctx.db.query.habit.findMany({
         where: eq(habit.user_id, ctx.session.user.id),
         with: {
-          habit_completions: true,
+          habit_completions: {
+            columns: {
+              completedAt: true,
+            },
+          },
         },
       });
 
       console.log(`Retrieved ${habits.length} habits`);
-      console.log(habits[0]);
 
-      return habits;
+      const flattenedHabits = habits.map(({ habit_completions, ...habit }) => ({
+        ...habit,
+        completedDates: new Set(
+          habit_completions.map(
+            ({ completedAt: d }) =>
+              `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`,
+          ),
+        ),
+      }));
+
+      return flattenedHabits;
     } catch (error) {
       console.error("Error while getting habits:", error);
       throw new TRPCError({
