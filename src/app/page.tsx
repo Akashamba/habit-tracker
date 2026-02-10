@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "~/server/better-auth";
 import { getSession } from "~/server/better-auth/server";
 import { api, HydrateClient } from "~/trpc/server";
-import HabitsContainer from "./components/habits-container";
+import HabitsContainer from "./_components/habits-container";
 
 export default async function Home() {
   const session = await getSession();
