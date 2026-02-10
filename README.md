@@ -163,8 +163,14 @@ Index: UNIQUE(habit_id, date)
 
 - [x] make ui for heatmap component
 - [x] parse completion data to render it in the heatmap ui
-- [ ] style everything with css
+- [x] style everything with css
 
 # Known Issues
 
+- [ ] implement handlers for create, delete, etc
+- [ ] completion graph shows the beginning by default, when I actually want it to show the end by defautl. can be fixed usings refs.
+- [ ] add logo to navbar
+- [ ] no good dway to sign out yet: replace temporary sign out button with user's profile picture and a sign out modal from shadcn
 - [ ] db push when there are tables already fails because of the sql expression column in the UNIQUE constraint of the habit_completions schema
+- [ ] standardize widths on larger screens (probably no wider than md or lg)
+- [ ] make scrollbars look pretty

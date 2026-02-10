@@ -22,7 +22,10 @@ export const habits = createTRPCRouter({
           });
         }
 
-        return { status: "success", habit: newHabit };
+        return {
+          status: "success",
+          habit: { ...newHabit, completedDates: [] }, // completedDates is an empty array since the habit was just created
+        };
       } catch (error) {
         console.error("Error in habit creation:", error);
         throw new TRPCError({
@@ -155,3 +158,5 @@ export const habits = createTRPCRouter({
       }
     }),
 });
+
+export type Habit = Awaited<ReturnType<typeof habits.getHabits>>[number];

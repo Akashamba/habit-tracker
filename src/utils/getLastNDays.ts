@@ -1,6 +1,6 @@
-export function getLastNdates(n: number = 365) {
+export function getLastNdates(n = 365) {
   const d = new Date();
-  const dates: String[] = [];
+  const dates: string[] = [];
 
   for (let i = 0; i < n; i++) {
     dates.push(
