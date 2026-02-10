@@ -58,6 +58,7 @@ Iteration 1: (deadline Friday, Feb 6)
 
 Iteration 1.5: (deadline Sunday, Feb 8)
 
+- [ ] encrypt access tokens
 - [ ] streaks
 
 Iteration 2:
