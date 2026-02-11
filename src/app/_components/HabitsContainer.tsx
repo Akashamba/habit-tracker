@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./Dialog";
+import { toast } from "sonner";
 
 const HabitsContainer = () => {
   const {
@@ -63,6 +64,8 @@ const Habit = ({ data: habit }: { data: Habit }) => {
 
   const deleteHabit = api.habitsRouter.deleteHabit.useMutation({
     onMutate: async ({ id }) => {
+      toast.success("Deleted!");
+
       await utils.habitsRouter.getHabits.cancel();
 
       const prev = utils.habitsRouter.getHabits.getData();
@@ -97,6 +100,31 @@ const Habit = ({ data: habit }: { data: Habit }) => {
     },
   });
 
+  const undoComplete = api.habitsRouter.undoComplete.useMutation({
+    onMutate: async ({ completionId }) => {
+      await utils.habitsRouter.getHabits.cancel();
+
+      const prev = utils.habitsRouter.getHabits.getData();
+
+      const d = new Date();
+      const todayUTC = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+
+      utils.habitsRouter.getHabits.setData(undefined, (old) =>
+        old?.map((h) =>
+          h.id === habit.id
+            ? {
+                ...h,
+                completedDates: new Set(
+                  [...h.completedDates].filter((d) => d === todayUTC),
+                ),
+              }
+            : h,
+        ),
+      );
+      return { prev };
+    },
+  });
+
   const handleDelete = async () => {
     deleteHabit.mutate(
       { id: habit.id },
@@ -118,6 +146,34 @@ const Habit = ({ data: habit }: { data: Habit }) => {
       {
         onError: (_err, _vars, ctx) => {
           utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
+        },
+
+        onSuccess: (data) => {
+          toast.success("Completed!", {
+            action: {
+              label: "Undo",
+              onClick: () => handleUndo(data?.id!),
+            },
+          });
+        },
+
+        onSettled: () => {
+          void utils.habitsRouter.getHabits.invalidate();
+        },
+      },
+    );
+  };
+
+  const handleUndo = async (id: string) => {
+    undoComplete.mutate(
+      { completionId: id },
+      {
+        onError: (_err, _vars, ctx) => {
+          utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
+        },
+
+        onSuccess: () => {
+          toast.success("Marked not done");
         },
 
         onSettled: () => {

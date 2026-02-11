@@ -14,6 +14,8 @@ import {
 } from "./Dialog";
 import { api } from "~/trpc/react";
 
+import { toast } from "sonner";
+
 const QuickMenu = () => {
   const utils = api.useUtils();
 
@@ -28,6 +30,7 @@ const QuickMenu = () => {
       { name: newHabitName },
       {
         onSettled: () => {
+          toast.success("Created new habit");
           void utils.habitsRouter.getHabits.invalidate();
         },
       },
@@ -58,12 +61,12 @@ const CreateDialog = ({
         <DialogHeader>
           <DialogTitle className="text-white">Create a New Habit</DialogTitle>
           <DialogDescription className="text-[#B9B9B9]">
-            <div className="pb-3">Give your new habit a name</div>
+            Give your new habit a name
             <input
               value={newHabitName}
               onChange={(e) => setNewHabitName(e.target.value)}
               placeholder="Enter habit name"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="mt-3 w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </DialogDescription>
         </DialogHeader>

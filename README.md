@@ -182,8 +182,8 @@ Index: UNIQUE(habit_id, date)
 
 - [ ] rename habits
 - [ ] add undo completion
+- [ ] completion graph shows the beginning by default, when I actually want it to show the end by default. can be fixed usings refs.
 - [ ] optimistic update for create
-- [ ] completion graph shows the beginning by default, when I actually want it to show the end by defautl. can be fixed usings refs.
 - [ ] add logo to navbar
 - [ ] completion graph elements should not be selectable
 - [ ] db push when there are tables already fails because of the sql expression column in the UNIQUE constraint of the habit_completions schema

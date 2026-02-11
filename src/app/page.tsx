@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "./_components/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./_components/avatar";
+import { Toaster } from "sonner";
 
 export default async function Home() {
   const session = await getSession();
@@ -38,6 +39,7 @@ export default async function Home() {
 
   return (
     <HydrateClient>
+      <Toaster position="top-center" />
       <main className="min-h-screen bg-[#020416]">
         <nav className="flex flex-col">
           <div className="flex h-[13vh] w-full items-center justify-between bg-linear-to-b from-[#121844] to-[#020416] p-5 text-[#fff]">
@@ -48,7 +50,6 @@ export default async function Home() {
               <div className="title text-[24pt] font-medium">Habits</div>
             </div>
             {session?.user ? (
-              // temporary sign out button, will replace with user's profile picture and a sign out modal from shadcn
               <UserAvatarWithMenu user={session.user} />
             ) : (
               <button
