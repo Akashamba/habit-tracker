@@ -61,15 +61,23 @@ _Production Ready Approach:_
 Iteration 1: (deadline Friday, Feb 6)
 
 - [x] view habits
-- [ ] Habit actions: create and delete habits (with confirmation modals)
-- [ ] make habit entries
+- [x] Habit actions: create and delete habits (with confirmation modals)
+- [x] make habit entries
 
-Iteration 1.5: (deadline Sunday, Feb 8)
+Iteration 1.5
 
 - [ ] encrypt access tokens
 - [ ] optimize indexes
 - [ ] streaks
+      <<<<<<< HEAD
+- [ ] # squares for current day only show up on current the day, like github
+        <<<<<<< Updated upstream
+        =======
 - [ ] squares for current day only show up on current the day, like github
+- [ ] make scrollbars look pretty
+- [ ] standardize widths on larger screens (probably no wider than md or lg)
+  > > > > > > > Stashed changes
+  > > > > > > > 1934ba5 (readme changes)
 
 Iteration 2:
 
@@ -164,6 +172,11 @@ Index: UNIQUE(habit_id, date)
 - [x] make ui for heatmap component
 - [x] parse completion data to render it in the heatmap ui
 - [x] style everything with css
+
+## Tasks for Feb 10
+
+- [x] add event handlers for create, delete, complete
+- [x] add shadcn for dialogs, dropdowns, user avatars, etc
 
 # Known Issues
 
