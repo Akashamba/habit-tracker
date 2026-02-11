@@ -68,6 +68,7 @@ const CreateDialog = ({
                 onSubmit={async (e) => {
                   e.preventDefault();
                   await handleCreate(newHabitName);
+                  setNewHabitName("");
                 }}
               />
             </form>
@@ -78,7 +79,14 @@ const CreateDialog = ({
             <Button>Cancel</Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button onClick={() => handleCreate(newHabitName)}>Create</Button>
+            <Button
+              onClick={() => {
+                handleCreate(newHabitName);
+                setNewHabitName("");
+              }}
+            >
+              Create
+            </Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
