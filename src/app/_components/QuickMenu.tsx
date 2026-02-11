@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "./Button";
 import {
   Dialog,
@@ -55,8 +55,16 @@ const CreateDialog = ({
   onClick: (newHabitName: string) => Promise<void>;
 }) => {
   const [newHabitName, setNewHabitName] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const handleSubmit = async () => {
+    await handleCreate(newHabitName);
+    setOpen(false);
+    setNewHabitName("");
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="bg-[#0F143B] sm:max-w-sm">
         <DialogHeader>
           <DialogTitle className="text-white">Create a New Habit</DialogTitle>
@@ -67,6 +75,11 @@ const CreateDialog = ({
               onChange={(e) => setNewHabitName(e.target.value)}
               placeholder="Enter habit name"
               className="mt-3 w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && newHabitName.trim()) {
+                  handleSubmit();
+                }
+              }}
             />
           </DialogDescription>
         </DialogHeader>
@@ -74,16 +87,7 @@ const CreateDialog = ({
           <DialogClose asChild>
             <Button>Cancel</Button>
           </DialogClose>
-          <DialogClose asChild>
-            <Button
-              onClick={async () => {
-                await handleCreate(newHabitName);
-                setNewHabitName("");
-              }}
-            >
-              Create
-            </Button>
-          </DialogClose>
+          <Button onClick={handleSubmit}>Create</Button>
         </DialogFooter>
       </DialogContent>
 
