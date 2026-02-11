@@ -180,11 +180,10 @@ Index: UNIQUE(habit_id, date)
 
 # Known Issues
 
-- [ ] implement handlers for create, delete, etc
+- [ ] rename habits
+- [ ] add undo completion
+- [ ] optimistic update for create
 - [ ] completion graph shows the beginning by default, when I actually want it to show the end by defautl. can be fixed usings refs.
 - [ ] add logo to navbar
-- [ ] no good dway to sign out yet: replace temporary sign out button with user's profile picture and a sign out modal from shadcn
+- [ ] completion graph elements should not be selectable
 - [ ] db push when there are tables already fails because of the sql expression column in the UNIQUE constraint of the habit_completions schema
-- [ ] standardize widths on larger screens (probably no wider than md or lg)
-- [ ] make scrollbars look pretty
-- [ ] optimistic update for create
