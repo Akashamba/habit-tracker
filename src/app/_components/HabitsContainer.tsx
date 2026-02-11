@@ -4,7 +4,17 @@ import { api } from "~/trpc/react";
 import { getLastNdates } from "~/utils/getLastNDays";
 import { useEffect, useState } from "react";
 import type { Habit } from "~/server/api/routers/habits-router";
-import Button from "./Button";
+import { Button } from "./Button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./Dialog";
 
 const HabitsContainer = () => {
   const {
@@ -42,6 +52,8 @@ export default HabitsContainer;
 
 const Habit = ({ data: habit }: { data: Habit }) => {
   const [currentDate, setCurrentDate] = useState<string>("");
+  const utils = api.useUtils();
+
   useEffect(() => {
     const d = new Date();
     setCurrentDate(
@@ -49,8 +61,33 @@ const Habit = ({ data: habit }: { data: Habit }) => {
     );
   }, []);
 
+  const deleteHabit = api.habitsRouter.deleteHabit.useMutation({
+    onMutate: async ({ id }) => {
+      await utils.habitsRouter.getHabits.cancel();
+
+      const prev = utils.habitsRouter.getHabits.getData();
+
+      utils.habitsRouter.getHabits.setData(undefined, (old) =>
+        old?.filter((h) => h.id !== id),
+      );
+
+      return { prev };
+    },
+  });
+
   const handleDelete = async () => {
-    alert("Coming soon!");
+    deleteHabit.mutate(
+      { id: habit.id },
+      {
+        onError: (_err, _vars, ctx) => {
+          utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
+        },
+
+        onSettled: () => {
+          utils.habitsRouter.getHabits.invalidate();
+        },
+      },
+    );
   };
 
   const handleComplete = async () => {
@@ -70,9 +107,7 @@ const Habit = ({ data: habit }: { data: Habit }) => {
 
       <div className="habit-actions mt-3 flex justify-between">
         <div className="flex gap-3">
-          <Button onClick={handleDelete} className="text-[#FF5656]">
-            Delete
-          </Button>
+          <DeleteDialog habitName={habit.name} onClick={handleDelete} />
           <Button>Option 1</Button>
         </div>
 
@@ -108,5 +143,38 @@ const CompletionGraph = ({
         ))}
       </div>
     </div>
+  );
+};
+
+const DeleteDialog = ({
+  habitName,
+  onClick: handleDelete,
+}: {
+  habitName: string;
+  onClick: () => Promise<void>;
+}) => {
+  return (
+    <Dialog>
+      <DialogContent className="bg-[#0F143B] sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="text-white">Delete Habit</DialogTitle>
+          <DialogDescription className="text-[#B9B9B9]">
+            Are you sure you want to delete{" "}
+            <span className="font-bold">{habitName}</span>?
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="bg-[#0F143B]">
+          <DialogClose asChild>
+            <Button>Cancel</Button>
+          </DialogClose>
+          <Button onClick={handleDelete} type="submit">
+            Delete
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+      <DialogTrigger asChild>
+        <Button className="text-[#FF5656]">Delete</Button>
+      </DialogTrigger>
+    </Dialog>
   );
 };
