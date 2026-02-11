@@ -5,16 +5,20 @@ import { getSession } from "~/server/better-auth/server";
 import { HydrateClient } from "~/trpc/server";
 import HabitsContainer from "./_components/HabitsContainer";
 import QuickMenu from "./_components/QuickMenu";
+import { Button } from "./_components/Button";
+import type { Session, User } from "better-auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./_components/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "./_components/avatar";
 
 export default async function Home() {
   const session = await getSession();
-
-  async function handleSignOut() {
-    "use server";
-    await auth.api.signOut({
-      headers: await headers(),
-    });
-  }
 
   async function handleSignIn() {
     "use server";
@@ -45,10 +49,7 @@ export default async function Home() {
             </div>
             {session?.user ? (
               // temporary sign out button, will replace with user's profile picture and a sign out modal from shadcn
-              <div
-                className="mb-2 size-10 cursor-pointer rounded-4xl bg-[#76A9D6]"
-                onClick={handleSignOut}
-              ></div>
+              <UserAvatarWithMenu user={session.user} />
             ) : (
               <button
                 className="cursor-pointer rounded bg-[#76A9D6] px-2 py-1 text-white"
@@ -71,3 +72,40 @@ export default async function Home() {
     </HydrateClient>
   );
 }
+
+const UserAvatarWithMenu = async ({ user }: { user: User }) => {
+  const handleSignOut = async () => {
+    "use server";
+    await auth.api.signOut({
+      headers: await headers(),
+    });
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="rounded-full">
+          <Avatar>
+            <AvatarImage src={user.image || ""} />
+            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-32">
+        <DropdownMenuGroup>
+          <DropdownMenuItem disabled>Settings</DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={handleSignOut}
+            variant="destructive"
+          >
+            Sign out
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
