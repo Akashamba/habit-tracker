@@ -180,8 +180,8 @@ Index: UNIQUE(habit_id, date)
 
 # Known Issues
 
-- [ ] rename habits
-- [ ] add undo completion
+- [x] rename habits
+- [x] add undo completion
 - [ ] completion graph shows the beginning by default, when I actually want it to show the end by default. can be fixed usings refs.
 - [ ] optimistic update for create
 - [ ] add logo to navbar

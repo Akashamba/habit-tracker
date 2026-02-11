@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "./Dialog";
 import { toast } from "sonner";
+import Input from "./Input";
 
 const HabitsContainer = () => {
   const {
@@ -125,6 +126,26 @@ const Habit = ({ data: habit }: { data: Habit }) => {
     },
   });
 
+  const renameHabit = api.habitsRouter.renameHabit.useMutation({
+    onMutate: async ({ habitId, newName }) => {
+      await utils.habitsRouter.getHabits.cancel();
+
+      const prev = utils.habitsRouter.getHabits.getData();
+
+      utils.habitsRouter.getHabits.setData(undefined, (old) =>
+        old?.map((h) =>
+          h.id === habitId
+            ? {
+                ...h,
+                name: newName,
+              }
+            : h,
+        ),
+      );
+      return { prev };
+    },
+  });
+
   const handleDelete = async () => {
     deleteHabit.mutate(
       { id: habit.id },
@@ -183,13 +204,65 @@ const Habit = ({ data: habit }: { data: Habit }) => {
     );
   };
 
+  const handleRename = async ({
+    id,
+    newName,
+  }: {
+    id: string;
+    newName: string;
+  }) => {
+    renameHabit.mutate(
+      { habitId: id, newName: newName },
+      {
+        onError: (_err, _vars, ctx) => {
+          utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
+        },
+
+        onSuccess: () => {
+          toast.success("Renamed");
+        },
+
+        onSettled: () => {
+          void utils.habitsRouter.getHabits.invalidate();
+        },
+      },
+    );
+  };
+
+  const [renameHabitMode, setRenameHabitMode] = useState(false);
+  const [newHabitName, setNewHabitName] = useState(habit.name);
+
   return (
     <div
-      className="habit-card w-full max-w-sm rounded-xl bg-[#0F143B] p-3"
+      className="habit-card h-[240px] w-full max-w-sm rounded-xl bg-[#0F143B] p-3"
       key={habit.id}
     >
-      <div className="habit-name text-[14pt] font-medium text-[#fff]">
-        {habit.name}
+      <div className="habit-name flex h-8 items-center">
+        {renameHabitMode ? (
+          <Input
+            value={newHabitName}
+            onChange={(e) => setNewHabitName(e.target.value)}
+            autoFocus
+            className="px-2 py-0 text-white"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setRenameHabitMode(false);
+              }
+              if (e.key === "Enter") {
+                setRenameHabitMode(false);
+                handleRename({ id: habit.id, newName: newHabitName });
+              }
+            }}
+            onBlur={() => setRenameHabitMode(false)}
+          />
+        ) : (
+          <div
+            onClick={() => setRenameHabitMode(true)}
+            className="habit-name text-[14pt] font-medium text-[#fff]"
+          >
+            {habit.name}
+          </div>
+        )}
       </div>
 
       <CompletionGraph data={habit.completedDates} />

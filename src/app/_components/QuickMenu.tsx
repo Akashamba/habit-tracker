@@ -15,6 +15,7 @@ import {
 import { api } from "~/trpc/react";
 
 import { toast } from "sonner";
+import Input from "./Input";
 
 const QuickMenu = () => {
   const utils = api.useUtils();
@@ -70,11 +71,10 @@ const CreateDialog = ({
           <DialogTitle className="text-white">Create a New Habit</DialogTitle>
           <DialogDescription className="text-[#B9B9B9]">
             Give your new habit a name
-            <input
+            <Input
               value={newHabitName}
               onChange={(e) => setNewHabitName(e.target.value)}
               placeholder="Enter habit name"
-              className="mt-3 w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && newHabitName.trim()) {
                   handleSubmit();
