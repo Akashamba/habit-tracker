@@ -17,6 +17,8 @@ import {
 } from "./_components/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./_components/avatar";
 import { Toaster } from "sonner";
+import SignedOutPage from "./_components/SignedOutPage";
+import Image from "next/image";
 
 export default async function Home() {
   const session = await getSession();
@@ -42,33 +44,39 @@ export default async function Home() {
       <Toaster position="top-center" />
       <main className="min-h-screen bg-[#020416]">
         <nav className="flex flex-col">
-          <div className="flex h-[13vh] w-full items-center justify-between bg-linear-to-b from-[#121844] to-[#020416] p-5 text-[#fff]">
-            <div className="flex items-end gap-3">
-              <div className="mb-2 size-10 rounded-4xl bg-[#76A9D6]">
-                {/* insert icon here */}
-              </div>
-              <div className="title text-[24pt] font-medium">Habits</div>
-            </div>
-            {session?.user ? (
-              <UserAvatarWithMenu user={session.user} />
-            ) : (
-              <button
-                className="cursor-pointer rounded bg-[#76A9D6] px-2 py-1 text-white"
-                onClick={handleSignIn}
-              >
-                Sign In
-              </button>
-            )}
-          </div>
+          <div className="h-[13vh] w-full bg-linear-to-b from-[#121844] to-[#020416] text-[#fff]">
+            <div className="mx-auto max-w-md">
+              <div className="flex items-center justify-between p-5">
+                <div className="flex items-end gap-3">
+                  <div className="mb-2 size-10 rounded-4xl bg-[#76A9D6]">
+                    <Image
+                      src="/favicon.png"
+                      alt="logo"
+                      width={300}
+                      height={200}
+                    />
+                  </div>
+                  <div className="title text-[24pt] font-medium">Habits</div>
+                </div>
 
-          <QuickMenu />
+                {session?.user ? (
+                  <UserAvatarWithMenu user={session.user} />
+                ) : (
+                  <button
+                    className="cursor-pointer items-center justify-center gap-3 rounded-2xl bg-white px-3 py-1 text-base font-semibold text-[#111]"
+                    onClick={handleSignIn}
+                  >
+                    Sign In
+                  </button>
+                )}
+              </div>
+
+              {session?.user && <QuickMenu />}
+            </div>
+          </div>
         </nav>
 
-        {session?.user ? (
-          <HabitsContainer />
-        ) : (
-          <div className="text-center text-white">Please sign in</div>
-        )}
+        {session?.user ? <HabitsContainer /> : <SignedOutPage />}
       </main>
     </HydrateClient>
   );

@@ -17,7 +17,7 @@ import {
 } from "./Dialog";
 import { toast } from "sonner";
 import Input from "./Input";
-import { EditIcon } from "lucide-react";
+import { EditIcon, Loader2 } from "lucide-react";
 import { ScrollToEndX } from "./ScrollToEndX";
 
 const HabitsContainer = () => {
@@ -28,11 +28,15 @@ const HabitsContainer = () => {
   } = api.habitsRouter.getHabits.useQuery();
 
   if (habitsLoading) {
-    return <div className="text-white">Loading...</div>;
+    return (
+      <div className="flex h-screen max-h-[70vh] items-center justify-center text-white">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
   }
 
   if (habitsError) {
-    return <div className="text-white">Error: {habitsError}</div>;
+    return <div className="text-red">Error: {habitsError}</div>;
   }
 
   if (habits?.length === 0) {

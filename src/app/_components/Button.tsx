@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "cursor-pointer rounded-3xl bg-[#3a3d58] px-4 py-1 text-[10pt] font-light whitespace-nowrap text-[#c8c5c5] transition-colors duration-150 ease-in-out active:scale-95 active:bg-[#4a4d68]",
+          "cursor-pointer rounded-3xl bg-[#3a3d58] px-4 py-1 text-[10pt] font-light whitespace-nowrap text-white transition-colors duration-150 ease-in-out active:scale-95 active:bg-[#4a4d68]",
         shadDefault:
           "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
         outline:

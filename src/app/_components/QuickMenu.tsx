@@ -39,11 +39,14 @@ const QuickMenu = () => {
   };
 
   return (
-    <div className="quick-menu scrollbar no-scrollbar mx-5 mb-7 flex gap-3 overflow-x-auto">
-      <CreateDialog onClick={handleCreateHabit} />
-      <Button onClick={() => alert("Coming soon!")}>Compact View</Button>
-      <Button onClick={() => alert("Coming soon!")}>Stats</Button>
-      <Button onClick={() => alert("Coming soon!")}>Social</Button>
+    <div className="mx-auto max-w-md">
+      <div className="quick-menu scrollbar no-scrollbar mx-5 mb-5 flex h-[4vh] gap-3 overflow-x-auto">
+        <CreateDialog onClick={handleCreateHabit} />
+        <Button onClick={() => alert("Coming soon!")}>Stats</Button>
+        <Button onClick={() => alert("Coming soon!")}>Social</Button>
+        <Button onClick={() => alert("Coming soon!")}>Compact View</Button>
+        <Button onClick={() => alert("Coming soon!")}>Select Habits</Button>
+      </div>
     </div>
   );
 };

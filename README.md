@@ -55,6 +55,7 @@ _Production Ready Approach:_
 - Batch operations
 - Undo longer than 30s (maybe only current day)
 - X times a week Frequency is an essential
+- show month and day info like github
 
 ### Targeted features
 
@@ -68,16 +69,9 @@ Iteration 1.5
 
 - [ ] encrypt access tokens
 - [ ] optimize indexes
-- [ ] streaks
-      <<<<<<< HEAD
-- [ ] # squares for current day only show up on current the day, like github
-        <<<<<<< Updated upstream
-        =======
+- [ ] reorder habits
 - [ ] squares for current day only show up on current the day, like github
-- [ ] make scrollbars look pretty
-- [ ] standardize widths on larger screens (probably no wider than md or lg)
-  > > > > > > > Stashed changes
-  > > > > > > > 1934ba5 (readme changes)
+- [ ] make scrollbars look pretty on all browsers
 
 Iteration 2:
 
@@ -178,11 +172,16 @@ Index: UNIQUE(habit_id, date)
 - [x] add event handlers for create, delete, complete
 - [x] add shadcn for dialogs, dropdowns, user avatars, etc
 
-# Known Issues
+## Tasks for Feb 11
 
-- [x] rename habits
+- [x] add rename habits feature
 - [x] add undo completion
 - [x] completion graph shows the beginning by default, when I actually want it to show the end by default. can be fixed usings refs.
+- [x] make app pretty (loading spinners, align whole app width to sm and center, signed out page, etc)
+
+# Known Issues
+
+- [ ] streaks currently show only total count, add proper streak calculation
 - [ ] optimistic update for create
 - [ ] add logo to navbar
 - [ ] completion graph elements should not be selectable
