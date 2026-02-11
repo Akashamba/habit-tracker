@@ -182,7 +182,7 @@ Index: UNIQUE(habit_id, date)
 
 - [x] rename habits
 - [x] add undo completion
-- [ ] completion graph shows the beginning by default, when I actually want it to show the end by default. can be fixed usings refs.
+- [x] completion graph shows the beginning by default, when I actually want it to show the end by default. can be fixed usings refs.
 - [ ] optimistic update for create
 - [ ] add logo to navbar
 - [ ] completion graph elements should not be selectable

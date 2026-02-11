@@ -18,6 +18,7 @@ import {
 import { toast } from "sonner";
 import Input from "./Input";
 import { EditIcon } from "lucide-react";
+import { ScrollToEndX } from "./ScrollToEndX";
 
 const HabitsContainer = () => {
   const {
@@ -310,7 +311,7 @@ const CompletionGraph = ({
     setPastDatesList(getLastNdates(371));
   }, []);
   return (
-    <div className="w-full overflow-x-scroll py-2.5">
+    <ScrollToEndX className="py-2.5">
       <div className="flex h-[125px] w-[1000px] flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-1">
         {pastDatesList.map((d, i) => (
           <div
@@ -319,7 +320,7 @@ const CompletionGraph = ({
           ></div>
         ))}
       </div>
-    </div>
+    </ScrollToEndX>
   );
 };
 
