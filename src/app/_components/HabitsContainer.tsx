@@ -70,7 +70,29 @@ const Habit = ({ data: habit }: { data: Habit }) => {
       utils.habitsRouter.getHabits.setData(undefined, (old) =>
         old?.filter((h) => h.id !== id),
       );
+      return { prev };
+    },
+  });
 
+  const completeHabit = api.habitsRouter.completeHabit.useMutation({
+    onMutate: async ({ habitId }) => {
+      await utils.habitsRouter.getHabits.cancel();
+
+      const prev = utils.habitsRouter.getHabits.getData();
+
+      const d = new Date();
+      const todayUTC = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+
+      utils.habitsRouter.getHabits.setData(undefined, (old) =>
+        old?.map((h) =>
+          h.id === habitId
+            ? {
+                ...h,
+                completedDates: new Set([...h.completedDates, todayUTC]),
+              }
+            : h,
+        ),
+      );
       return { prev };
     },
   });
@@ -91,7 +113,18 @@ const Habit = ({ data: habit }: { data: Habit }) => {
   };
 
   const handleComplete = async () => {
-    alert("Coming soon!");
+    completeHabit.mutate(
+      { habitId: habit.id },
+      {
+        onError: (_err, _vars, ctx) => {
+          utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
+        },
+
+        onSettled: () => {
+          void utils.habitsRouter.getHabits.invalidate();
+        },
+      },
+    );
   };
 
   return (
@@ -112,11 +145,11 @@ const Habit = ({ data: habit }: { data: Habit }) => {
         </div>
 
         {habit.completedDates.has(currentDate) ? (
-          <Button className="bg-[#1C7C36]" disabled={true}>
-            🎉 &nbsp; Done
-          </Button>
+          <Button disabled={true}>🎉 &nbsp; Done</Button>
         ) : (
-          <Button onClick={handleComplete}>Mark as Done</Button>
+          <Button className="bg-[#1C7C36]" onClick={handleComplete}>
+            Mark as Done
+          </Button>
         )}
       </div>
     </div>

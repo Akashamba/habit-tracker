@@ -73,8 +73,8 @@ const CreateDialog = ({
           </DialogClose>
           <DialogClose asChild>
             <Button
-              onClick={() => {
-                handleCreate(newHabitName);
+              onClick={async () => {
+                await handleCreate(newHabitName);
                 setNewHabitName("");
               }}
             >
