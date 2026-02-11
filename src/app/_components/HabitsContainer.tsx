@@ -29,7 +29,7 @@ const HabitsContainer = () => {
 
   if (habitsLoading) {
     return (
-      <div className="flex h-screen max-h-[70vh] items-center justify-center text-white">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white">
         <Loader2 className="animate-spin" />
       </div>
     );

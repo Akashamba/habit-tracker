@@ -6,7 +6,7 @@ import { CheckCircle2, Flame, Shield, Sparkles } from "lucide-react";
 export default function SignedOutPage() {
   return (
     <div className="mx-auto min-h-screen max-w-sm text-white">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-6 py-10">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-6 pb-10">
         {/* Hero */}
         <main className="flex flex-col items-center gap-8 text-center">
           <div className="max-w-2xl">

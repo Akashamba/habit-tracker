@@ -43,8 +43,8 @@ export default async function Home() {
     <HydrateClient>
       <Toaster position="top-center" />
       <main className="min-h-screen bg-[#020416]">
-        <nav className="flex flex-col">
-          <div className="h-[13vh] w-full bg-linear-to-b from-[#121844] to-[#020416] text-[#fff]">
+        <nav className="flex h-[120px] flex-col">
+          <div className="h-[90px] w-full bg-linear-to-b from-[#121844] to-[#020416] text-[#fff]">
             <div className="mx-auto max-w-md">
               <div className="flex items-center justify-between p-5">
                 <div className="flex items-end gap-3">
@@ -72,6 +72,7 @@ export default async function Home() {
               </div>
 
               {session?.user && <QuickMenu />}
+              {/* <QuickMenu /> */}
             </div>
           </div>
         </nav>
