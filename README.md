@@ -49,11 +49,19 @@ _Production Ready Approach:_
 - auth using google sso
 - hosted on vercel
 
+### More ideas to think about
+
+- Condensed view
+- Batch operations
+- Undo longer than 30s (maybe only current day)
+- X times a week Frequency is an essential
+
 ### Targeted features
 
 Iteration 1: (deadline Friday, Feb 6)
 
-- [ ] Habit actions: create (with modal or inline), view, delete (with confirmation modal)
+- [x] view habits
+- [ ] Habit actions: create and delete habits (with confirmation modals)
 - [ ] make habit entries
 
 Iteration 1.5: (deadline Sunday, Feb 8)
@@ -86,7 +94,7 @@ Iteration 4:
 - [x] deploy pipelines
 - [x] finalize a UI, schema, and api endpoints with data signature
 - [x] set up rough trpc router and seed db with fake data
-- [ ] develop UI
+- [x] develop UI
 
 ## Schema
 
