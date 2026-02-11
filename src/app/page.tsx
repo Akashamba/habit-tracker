@@ -6,7 +6,7 @@ import { HydrateClient } from "~/trpc/server";
 import HabitsContainer from "./_components/HabitsContainer";
 import QuickMenu from "./_components/QuickMenu";
 import { Button } from "./_components/Button";
-import type { Session, User } from "better-auth";
+import type { User } from "better-auth";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -86,7 +86,7 @@ const UserAvatarWithMenu = async ({ user }: { user: User }) => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
           <Avatar>
-            <AvatarImage src={user.image || ""} />
+            <AvatarImage src={user.image ?? ""} />
             <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
           </Avatar>
         </Button>
