@@ -102,7 +102,7 @@ const Habit = ({ data: habit }: { data: Habit }) => {
   });
 
   const undoComplete = api.habitsRouter.undoComplete.useMutation({
-    onMutate: async ({ completionId }) => {
+    onMutate: async () => {
       await utils.habitsRouter.getHabits.cancel();
 
       const prev = utils.habitsRouter.getHabits.getData();
@@ -173,7 +173,11 @@ const Habit = ({ data: habit }: { data: Habit }) => {
           toast.success("Completed!", {
             action: {
               label: "Undo",
-              onClick: () => handleUndo(data?.id!),
+              onClick: () => {
+                if (data?.id) {
+                  void handleUndo(data?.id);
+                }
+              },
             },
           });
         },
@@ -244,13 +248,13 @@ const Habit = ({ data: habit }: { data: Habit }) => {
             onChange={(e) => setNewHabitName(e.target.value)}
             autoFocus
             className="px-2 py-0 text-white"
-            onKeyDown={(e) => {
+            onKeyDown={async (e) => {
               if (e.key === "Escape") {
                 setRenameHabitMode(false);
               }
               if (e.key === "Enter") {
                 setRenameHabitMode(false);
-                handleRename({ id: habit.id, newName: newHabitName });
+                await handleRename({ id: habit.id, newName: newHabitName });
               }
             }}
             onBlur={() => setRenameHabitMode(false)}

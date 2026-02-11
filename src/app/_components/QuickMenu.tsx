@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Button } from "./Button";
 import {
   Dialog,
@@ -75,9 +75,9 @@ const CreateDialog = ({
               value={newHabitName}
               onChange={(e) => setNewHabitName(e.target.value)}
               placeholder="Enter habit name"
-              onKeyDown={(e) => {
+              onKeyDown={async (e) => {
                 if (e.key === "Enter" && newHabitName.trim()) {
-                  handleSubmit();
+                  await handleSubmit();
                 }
               }}
             />
