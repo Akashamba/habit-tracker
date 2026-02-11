@@ -30,5 +30,5 @@ export const habit_completions = createTableWithPrefix(
   ],
 );
 
-export type Habit = typeof habit.$inferSelect;
+export type HabitWithCompletions = typeof habit.$inferSelect;
 export type HabitCompletion = typeof habit_completions.$inferSelect;

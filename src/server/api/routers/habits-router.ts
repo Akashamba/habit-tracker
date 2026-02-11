@@ -22,7 +22,10 @@ export const habits = createTRPCRouter({
           });
         }
 
-        return { status: "success", habit: newHabit };
+        return {
+          status: "success",
+          habit: { ...newHabit, completedDates: [] }, // completedDates is an empty array since the habit was just created
+        };
       } catch (error) {
         console.error("Error in habit creation:", error);
         throw new TRPCError({
@@ -37,15 +40,27 @@ export const habits = createTRPCRouter({
       const habits = await ctx.db.query.habit.findMany({
         where: eq(habit.user_id, ctx.session.user.id),
         with: {
-          habit_completions: true,
+          habit_completions: {
+            columns: {
+              completedAt: true,
+            },
+          },
         },
       });
-      //   TODO: get completions for each habit as well
 
       console.log(`Retrieved ${habits.length} habits`);
-      console.log(habits[0]);
 
-      return habits;
+      const flattenedHabits = habits.map(({ habit_completions, ...habit }) => ({
+        ...habit,
+        completedDates: new Set(
+          habit_completions.map(
+            ({ completedAt: d }) =>
+              `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`,
+          ),
+        ),
+      }));
+
+      return flattenedHabits;
     } catch (error) {
       console.error("Error while getting habits:", error);
       throw new TRPCError({
@@ -143,3 +158,5 @@ export const habits = createTRPCRouter({
       }
     }),
 });
+
+export type Habit = Awaited<ReturnType<typeof habits.getHabits>>[number];

@@ -67,7 +67,9 @@ Iteration 1: (deadline Friday, Feb 6)
 Iteration 1.5: (deadline Sunday, Feb 8)
 
 - [ ] encrypt access tokens
+- [ ] optimize indexes
 - [ ] streaks
+- [ ] squares for current day only show up on current the day, like github
 
 Iteration 2:
 
@@ -155,7 +157,21 @@ Index: UNIQUE(habit_id, date)
 
 - [x] set up trpc router
 - [x] set up a seed script with fake data in db
+- [x] scaffold UI (everything except heatmap component)
+
+## Tasks for Feb 9
+
+- [x] make ui for heatmap component
+- [x] parse completion data to render it in the heatmap ui
+- [x] style everything with css
 
 # Known Issues
 
+- [ ] implement handlers for create, delete, etc
+- [ ] completion graph shows the beginning by default, when I actually want it to show the end by defautl. can be fixed usings refs.
+- [ ] add logo to navbar
+- [ ] no good dway to sign out yet: replace temporary sign out button with user's profile picture and a sign out modal from shadcn
 - [ ] db push when there are tables already fails because of the sql expression column in the UNIQUE constraint of the habit_completions schema
+- [ ] standardize widths on larger screens (probably no wider than md or lg)
+- [ ] make scrollbars look pretty
+- [ ] optimistic update for create
