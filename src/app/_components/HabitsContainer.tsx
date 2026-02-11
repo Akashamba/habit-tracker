@@ -17,6 +17,7 @@ import {
 } from "./Dialog";
 import { toast } from "sonner";
 import Input from "./Input";
+import { EditIcon } from "lucide-react";
 
 const HabitsContainer = () => {
   const {
@@ -42,7 +43,7 @@ const HabitsContainer = () => {
   }
 
   return (
-    <div className="mx-5 flex flex-col items-center gap-5">
+    <div className="mx-5 flex flex-col items-center gap-5 py-5">
       {habits?.map((habit) => (
         <Habit data={habit} key={habit.id} />
       ))}
@@ -238,35 +239,45 @@ const Habit = ({ data: habit }: { data: Habit }) => {
 
   return (
     <div
-      className="habit-card h-[240px] w-full max-w-sm rounded-xl bg-[#0F143B] p-3"
+      className="habit-card h-[245px] w-full max-w-sm rounded-xl bg-[#0F143B] p-3"
       key={habit.id}
     >
-      <div className="habit-name flex h-8 items-center">
-        {renameHabitMode ? (
-          <Input
-            value={newHabitName}
-            onChange={(e) => setNewHabitName(e.target.value)}
-            autoFocus
-            className="px-2 py-0 text-white"
-            onKeyDown={async (e) => {
-              if (e.key === "Escape") {
-                setRenameHabitMode(false);
-              }
-              if (e.key === "Enter") {
-                setRenameHabitMode(false);
-                await handleRename({ id: habit.id, newName: newHabitName });
-              }
-            }}
-            onBlur={() => setRenameHabitMode(false)}
-          />
-        ) : (
-          <div
-            onClick={() => setRenameHabitMode(true)}
-            className="habit-name text-[14pt] font-medium text-[#fff]"
-          >
-            {habit.name}
-          </div>
-        )}
+      <div className="habit-top-row flex items-baseline justify-between pr-1">
+        <div className="habit-name flex h-8 items-center">
+          {renameHabitMode ? (
+            <Input
+              value={newHabitName}
+              onChange={(e) => setNewHabitName(e.target.value)}
+              autoFocus
+              className="px-2 py-0 text-white"
+              onKeyDown={async (e) => {
+                if (e.key === "Escape") {
+                  setRenameHabitMode(false);
+                }
+                if (e.key === "Enter") {
+                  setRenameHabitMode(false);
+                  if (newHabitName !== habit.name) {
+                    await handleRename({ id: habit.id, newName: newHabitName });
+                  }
+                }
+              }}
+              onBlur={() => setRenameHabitMode(false)}
+            />
+          ) : (
+            <div className="habit-name flex items-center text-[14pt] font-medium text-[#fff]">
+              <span>{habit.name}</span>
+              <Button
+                variant="ghost"
+                onClick={() => setRenameHabitMode(true)}
+                className="hover:bg-unset text-[#3a3d58] hover:text-[#d1d1d1]"
+              >
+                <EditIcon size={12} />
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <div className="text-white">🔥 {habit.completedDates.size}</div>
       </div>
 
       <CompletionGraph data={habit.completedDates} />
@@ -274,7 +285,7 @@ const Habit = ({ data: habit }: { data: Habit }) => {
       <div className="habit-actions mt-3 flex justify-between">
         <div className="flex gap-3">
           <DeleteDialog habitName={habit.name} onClick={handleDelete} />
-          <Button>Option 1</Button>
+          <Button onClick={() => alert("Coming soon!")}>Settings</Button>
         </div>
 
         {habit.completedDates.has(currentDate) ? (

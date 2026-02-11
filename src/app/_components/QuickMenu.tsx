@@ -41,9 +41,9 @@ const QuickMenu = () => {
   return (
     <div className="quick-menu scrollbar no-scrollbar mx-5 mb-7 flex gap-3 overflow-x-auto">
       <CreateDialog onClick={handleCreateHabit} />
-      <Button>Option 2</Button>
-      <Button>Option 3</Button>
-      <Button>Option 4</Button>
+      <Button onClick={() => alert("Coming soon!")}>Compact View</Button>
+      <Button onClick={() => alert("Coming soon!")}>Stats</Button>
+      <Button onClick={() => alert("Coming soon!")}>Social</Button>
     </div>
   );
 };
