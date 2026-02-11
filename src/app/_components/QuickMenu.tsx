@@ -59,19 +59,12 @@ const CreateDialog = ({
           <DialogTitle className="text-white">Create a New Habit</DialogTitle>
           <DialogDescription className="text-[#B9B9B9]">
             <div className="pb-3">Give your new habit a name</div>
-            <form>
-              <input
-                value={newHabitName}
-                onChange={(e) => setNewHabitName(e.target.value)}
-                placeholder="Enter habit name"
-                className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  await handleCreate(newHabitName);
-                  setNewHabitName("");
-                }}
-              />
-            </form>
+            <input
+              value={newHabitName}
+              onChange={(e) => setNewHabitName(e.target.value)}
+              placeholder="Enter habit name"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="bg-[#0F143B]">
