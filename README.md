@@ -174,3 +174,4 @@ Index: UNIQUE(habit_id, date)
 - [ ] db push when there are tables already fails because of the sql expression column in the UNIQUE constraint of the habit_completions schema
 - [ ] standardize widths on larger screens (probably no wider than md or lg)
 - [ ] make scrollbars look pretty
+- [ ] optimistic update for create

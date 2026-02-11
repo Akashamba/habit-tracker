@@ -84,7 +84,7 @@ const Habit = ({ data: habit }: { data: Habit }) => {
         },
 
         onSettled: () => {
-          utils.habitsRouter.getHabits.invalidate();
+          void utils.habitsRouter.getHabits.invalidate();
         },
       },
     );
