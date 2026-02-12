@@ -244,17 +244,17 @@ const Habit = ({ data: habit }: { data: Habit }) => {
 
   return (
     <div
-      className="habit-card h-[245px] w-full max-w-sm rounded-xl bg-[#0F143B] p-3"
+      className="habit-card h-[225px] w-full max-w-sm rounded-xl bg-[#0F143B] px-3.5 pt-2 pb-3.5"
       key={habit.id}
     >
-      <div className="habit-top-row flex items-baseline justify-between pr-1">
+      <div className="habit-top-row flex h-[34px] items-center justify-between pr-1">
         <div className="habit-name flex h-8 items-center">
           {renameHabitMode ? (
             <Input
               value={newHabitName}
               onChange={(e) => setNewHabitName(e.target.value)}
               autoFocus
-              className="px-2 py-0 text-white"
+              className="m-0 border-0 border-none p-0 text-[14pt] font-medium text-white outline-0 focus:ring-0"
               onKeyDown={async (e) => {
                 if (e.key === "Escape") {
                   setRenameHabitMode(false);
@@ -315,12 +315,12 @@ const CompletionGraph = ({
     setPastDatesList(getLastNdates(371));
   }, []);
   return (
-    <ScrollToEndX className="py-2.5">
-      <div className="flex h-[125px] w-[1000px] flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-1">
+    <ScrollToEndX className="no-scrollbar">
+      <div className="flex h-[125px] w-[900px] flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-0.75">
         {pastDatesList.map((d, i) => (
           <div
             key={i}
-            className={`h-3.5 w-3.5 rounded-sm ${completedDates.has(d) ? "bg-[#07551C]" : "bg-[#383A4C]"}`}
+            className={`h-3.5 w-3.5 rounded-[0.3rem] ${completedDates.has(d) ? "bg-[#07551C]" : "bg-[#383A4C]"}`}
           ></div>
         ))}
       </div>
