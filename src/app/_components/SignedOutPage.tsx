@@ -1,9 +1,24 @@
-"use client";
-
 import React from "react";
 import { CheckCircle2, Flame, Shield, Sparkles } from "lucide-react";
+import { redirect } from "next/navigation";
+import { auth } from "~/server/better-auth";
 
 export default function SignedOutPage() {
+  async function handleSignIn() {
+    "use server";
+    const res = await auth.api.signInSocial({
+      body: {
+        provider: "google",
+        callbackURL: "/",
+      },
+    });
+
+    if (!res.url) {
+      throw new Error("No URL returned from signInSocial");
+    }
+
+    redirect(res.url);
+  }
   return (
     <div className="mx-auto min-h-screen max-w-sm text-white">
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-6 pb-10">
@@ -28,12 +43,8 @@ export default function SignedOutPage() {
             {/* Google button */}
             <button
               type="button"
-              className="group flex w-full items-center justify-center gap-3 rounded-2xl bg-white px-5 py-3 text-base font-semibold text-[#111] shadow-lg shadow-black/30 transition hover:-translate-y-[1px] hover:shadow-xl active:translate-y-0"
-              onClick={() => {
-                // TODO: wire to your Google SSO handler
-                // signIn("google")
-                alert("Sign in with Google");
-              }}
+              className="group flex w-full cursor-pointer items-center justify-center gap-3 rounded-2xl bg-white px-5 py-3 text-base font-semibold text-[#111] shadow-lg shadow-black/30 transition"
+              onClick={handleSignIn}
             >
               Continue with Google
             </button>

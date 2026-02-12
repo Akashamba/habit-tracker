@@ -59,7 +59,7 @@ _Production Ready Approach:_
 
 ### Targeted features
 
-Iteration 1: (deadline Friday, Feb 6)
+Iteration 1
 
 - [x] view habits
 - [x] Habit actions: create and delete habits (with confirmation modals)
@@ -71,7 +71,6 @@ Iteration 1.5
 - [ ] optimize indexes
 - [ ] reorder habits
 - [ ] squares for current day only show up on current the day, like github
-- [ ] make scrollbars look pretty on all browsers
 
 Iteration 2:
 
@@ -178,11 +177,11 @@ Index: UNIQUE(habit_id, date)
 - [x] add undo completion
 - [x] completion graph shows the beginning by default, when I actually want it to show the end by default. can be fixed usings refs.
 - [x] make app pretty (loading spinners, align whole app width to sm and center, signed out page, etc)
+- [x] add logo to navbar
+- [ ] streaks currently show only total count, add proper streak calculation
 
 # Known Issues
 
-- [ ] streaks currently show only total count, add proper streak calculation
 - [ ] optimistic update for create
-- [ ] add logo to navbar
 - [ ] completion graph elements should not be selectable
 - [ ] db push when there are tables already fails because of the sql expression column in the UNIQUE constraint of the habit_completions schema
