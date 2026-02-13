@@ -122,7 +122,7 @@ const Habit = ({ data: habit }: { data: Habit }) => {
             ? {
                 ...h,
                 completedDates: new Set(
-                  [...h.completedDates].filter((d) => d === todayUTC),
+                  [...h.completedDates].filter((d) => d !== todayUTC),
                 ),
               }
             : h,
