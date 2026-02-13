@@ -17,8 +17,26 @@ import {
 } from "./Dialog";
 import { toast } from "sonner";
 import Input from "./Input";
-import { EditIcon, Loader2 } from "lucide-react";
+import {
+  Check,
+  CheckCheck,
+  CheckCircle,
+  CheckIcon,
+  CheckSquare,
+  CheckSquare2,
+  EditIcon,
+  Ellipsis,
+  Loader2,
+} from "lucide-react";
 import { ScrollToEndX } from "./ScrollToEndX";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./dropdown-menu";
 
 const HabitsContainer = () => {
   const {
@@ -68,21 +86,6 @@ const Habit = ({ data: habit }: { data: Habit }) => {
       `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`,
     );
   }, []);
-
-  const deleteHabit = api.habitsRouter.deleteHabit.useMutation({
-    onMutate: async ({ id }) => {
-      toast.success("Deleted!");
-
-      await utils.habitsRouter.getHabits.cancel();
-
-      const prev = utils.habitsRouter.getHabits.getData();
-
-      utils.habitsRouter.getHabits.setData(undefined, (old) =>
-        old?.filter((h) => h.id !== id),
-      );
-      return { prev };
-    },
-  });
 
   const completeHabit = api.habitsRouter.completeHabit.useMutation({
     onMutate: async ({ habitId }) => {
@@ -152,21 +155,6 @@ const Habit = ({ data: habit }: { data: Habit }) => {
     },
   });
 
-  const handleDelete = async () => {
-    deleteHabit.mutate(
-      { id: habit.id },
-      {
-        onError: (_err, _vars, ctx) => {
-          utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
-        },
-
-        onSettled: () => {
-          void utils.habitsRouter.getHabits.invalidate();
-        },
-      },
-    );
-  };
-
   const handleComplete = async () => {
     completeHabit.mutate(
       { habitId: habit.id },
@@ -214,15 +202,9 @@ const Habit = ({ data: habit }: { data: Habit }) => {
     );
   };
 
-  const handleRename = async ({
-    id,
-    newName,
-  }: {
-    id: string;
-    newName: string;
-  }) => {
+  const handleRename = async ({ newName }: { newName: string }) => {
     renameHabit.mutate(
-      { habitId: id, newName: newName },
+      { habitId: habit.id, newName: newName },
       {
         onError: (_err, _vars, ctx) => {
           utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
@@ -244,63 +226,62 @@ const Habit = ({ data: habit }: { data: Habit }) => {
 
   return (
     <div
-      className="habit-card h-[225px] w-full max-w-sm rounded-xl bg-[#0F143B] px-3.5 pt-2 pb-3.5"
+      className="habit-card h-[185px] w-full max-w-sm rounded-xl bg-[#0F143B] px-3.5 pt-2 pb-3.5"
       key={habit.id}
     >
       <div className="habit-top-row flex h-[34px] items-center justify-between pr-1">
-        <div className="habit-name flex h-8 items-center">
+        <div className="habit-name flex h-8 w-[70%] items-center">
           {renameHabitMode ? (
             <Input
               value={newHabitName}
               onChange={(e) => setNewHabitName(e.target.value)}
               autoFocus
-              className="m-0 border-0 border-none p-0 text-[14pt] font-medium text-white outline-0 focus:ring-0"
+              className="m-0 mr-2 rounded-none border-0 border-none p-0 text-[14pt] font-medium text-white outline-0 focus:ring-0"
               onKeyDown={async (e) => {
                 if (e.key === "Escape") {
+                  setNewHabitName(habit.name);
                   setRenameHabitMode(false);
                 }
                 if (e.key === "Enter") {
                   setRenameHabitMode(false);
                   if (newHabitName !== habit.name) {
-                    await handleRename({ id: habit.id, newName: newHabitName });
+                    await handleRename({ newName: newHabitName });
                   }
                 }
               }}
               onBlur={() => setRenameHabitMode(false)}
             />
           ) : (
-            <div className="habit-name flex items-center text-[14pt] font-medium text-[#fff]">
-              <span>{habit.name}</span>
+            <div className="habit-name flex w-full items-center text-[14pt] font-medium text-[#fff]">
+              <span className="max-w-[70%] truncate">{habit.name}</span>
               <Button
                 variant="ghost"
                 onClick={() => setRenameHabitMode(true)}
-                className="hover:bg-unset text-[#3a3d58] hover:text-[#d1d1d1]"
+                className="hover:bg-unset pr-0 text-[#3a3d58] hover:text-[#d1d1d1]"
               >
                 <EditIcon size={12} />
               </Button>
+              <HabitDropdownMenu habitId={habit.id} />
             </div>
           )}
         </div>
 
-        <div className="text-white">🔥 {habit.completedDates.size}</div>
+        <div className="flex w-[30%] items-center justify-end gap-2">
+          <div className="w-[65%] text-right text-white">
+            🔥 {habit.completedDates.size}
+          </div>
+          <Button
+            variant="ghost"
+            onClick={handleComplete}
+            disabled={habit.completedDates.has(currentDate)}
+            className={`ml-1 w-[35%] rounded-full bg-white/5 ${habit.completedDates.has(currentDate) ? "hover:bg-unset cursor-auto border-white/10 text-[#07551c] opacity-100! hover:text-[#07551c]" : "border border-white/10 bg-white/5 text-white hover:bg-white/10 hover:text-[#d1d1d1]"}`}
+          >
+            <Check size={256} strokeWidth={3} />
+          </Button>
+        </div>
       </div>
 
       <CompletionGraph data={habit.completedDates} />
-
-      <div className="habit-actions mt-3 flex justify-between">
-        <div className="flex gap-3">
-          <DeleteDialog habitName={habit.name} onClick={handleDelete} />
-          <Button onClick={() => alert("Coming soon!")}>Settings</Button>
-        </div>
-
-        {habit.completedDates.has(currentDate) ? (
-          <Button disabled={true}>🎉 &nbsp; Done</Button>
-        ) : (
-          <Button className="bg-[#1C7C36]" onClick={handleComplete}>
-            Mark as Done
-          </Button>
-        )}
-      </div>
     </div>
   );
 };
@@ -328,35 +309,71 @@ const CompletionGraph = ({
   );
 };
 
-const DeleteDialog = ({
-  habitName,
-  onClick: handleDelete,
-}: {
-  habitName: string;
-  onClick: () => Promise<void>;
-}) => {
+const HabitDropdownMenu = ({ habitId }: { habitId: string }) => {
+  const utils = api.useUtils();
+
+  const deleteHabit = api.habitsRouter.deleteHabit.useMutation({
+    onMutate: async ({ id }) => {
+      toast.success("Deleted!");
+
+      await utils.habitsRouter.getHabits.cancel();
+
+      const prev = utils.habitsRouter.getHabits.getData();
+
+      utils.habitsRouter.getHabits.setData(undefined, (old) =>
+        old?.filter((h) => h.id !== id),
+      );
+      return { prev };
+    },
+  });
+
+  const handleDelete = async () => {
+    deleteHabit.mutate(
+      { id: habitId },
+      {
+        onError: (_err, _vars, ctx) => {
+          utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
+        },
+
+        onSettled: () => {
+          void utils.habitsRouter.getHabits.invalidate();
+        },
+      },
+    );
+  };
   return (
-    <Dialog>
-      <DialogContent className="bg-[#0F143B] sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle className="text-white">Delete Habit</DialogTitle>
-          <DialogDescription className="text-[#B9B9B9]">
-            Are you sure you want to delete{" "}
-            <span className="font-bold">{habitName}</span>?
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="bg-[#0F143B]">
-          <DialogClose asChild>
-            <Button>Cancel</Button>
-          </DialogClose>
-          <Button onClick={handleDelete} type="submit">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hover:bg-unset text-[#3a3d58] hover:text-[#d1d1d1]"
+        >
+          <Ellipsis size={12} />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-32 border-[#0F143B] bg-[#020416]">
+        <DropdownMenuGroup>
+          <DropdownMenuItem
+            className="text-white focus:bg-[#0f122d] focus:text-[#bcbcbc]"
+            disabled
+          >
+            Settings
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled
+            className="text-white focus:bg-[#0f122d] focus:text-[#bcbcbc]"
+          >
+            Stats
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator className="bg-[#0F143B]" />
+        <DropdownMenuGroup>
+          <DropdownMenuItem onClick={handleDelete} variant="destructive">
             Delete
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-      <DialogTrigger asChild>
-        <Button className="text-[#FF5656]">Delete</Button>
-      </DialogTrigger>
-    </Dialog>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
