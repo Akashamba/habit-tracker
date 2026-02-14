@@ -56,6 +56,7 @@ _Production Ready Approach:_
 - Undo longer than 30s (maybe only current day)
 - X times a week Frequency is an essential
 - show month and day info like github
+- “Streak freeze” token you can spend once per week
 
 ### Targeted features
 
@@ -84,12 +85,13 @@ Iteration 2:
 
 Iteration 3:
 
-- [ ] connect with notion to make journal entries about each completion
+- [ ] local first + offline access
 - [ ] email reminders
 
 Iteration 4:
 
 - [ ] Social features: add friends, see their streaks, leaderboards, etc
+- [ ] connect with notion to make journal entries about each completion
 
 ### Roadmap for above features
 
