@@ -253,14 +253,12 @@ const Habit = ({ data: habit }: { data: Habit }) => {
             />
           ) : (
             <div className="habit-name flex w-full items-center text-[14pt] font-medium text-[#fff]">
-              <span className="max-w-[70%] truncate">{habit.name}</span>
-              <Button
-                variant="ghost"
+              <span
+                className="max-w-[70%] cursor-pointer truncate"
                 onClick={() => setRenameHabitMode(true)}
-                className="hover:bg-unset pr-0 text-[#3a3d58] hover:text-[#d1d1d1]"
               >
-                <EditIcon size={12} />
-              </Button>
+                {habit.name}
+              </span>
               <HabitDropdownMenu habitId={habit.id} />
             </div>
           )}
