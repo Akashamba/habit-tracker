@@ -345,7 +345,7 @@ const HabitDropdownMenu = ({ habitId }: { habitId: string }) => {
         <Button
           variant="ghost"
           size="icon"
-          className="hover:bg-unset text-[#3a3d58] hover:text-[#d1d1d1]"
+          className="hover:bg-unset ml-2 text-[#3a3d58] hover:text-[#d1d1d1] focus-visible:border-transparent focus-visible:ring-0 focus-visible:outline-none aria-expanded:bg-white/5 aria-expanded:text-white"
         >
           <Ellipsis size={12} />
         </Button>
