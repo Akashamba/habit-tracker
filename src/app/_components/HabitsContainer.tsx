@@ -5,29 +5,9 @@ import { getLastNdates } from "~/utils/getLastNDays";
 import { useEffect, useState } from "react";
 import type { Habit } from "~/server/api/routers/habits-router";
 import { Button } from "./Button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./Dialog";
 import { toast } from "sonner";
 import Input from "./Input";
-import {
-  Check,
-  CheckCheck,
-  CheckCircle,
-  CheckIcon,
-  CheckSquare,
-  CheckSquare2,
-  EditIcon,
-  Ellipsis,
-  Loader2,
-} from "lucide-react";
+import { Check, Ellipsis, Loader2 } from "lucide-react";
 import { ScrollToEndX } from "./ScrollToEndX";
 import {
   DropdownMenu,
@@ -297,10 +277,21 @@ const CompletionGraph = ({
     <ScrollToEndX className="no-scrollbar">
       <div className="flex h-[125px] w-[900px] flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-0.75">
         {pastDatesList.map((d, i) => (
-          <div
-            key={i}
-            className={`h-3.5 w-3.5 rounded-[0.3rem] ${completedDates.has(d) ? "bg-[#07551C]" : "bg-[#383A4C]"}`}
-          ></div>
+          <div key={i} className="group relative">
+            {/* programmatically determining top and left here to deal with tooltip getting clipped by overflow. todo: deal with this using react's portals instead */}
+            <div
+              className={`tooltip bg-foreground text-background invisible absolute z-50 w-fit max-w-xs rounded-md px-3 py-1.5 text-xs group-hover:visible ${[5, 6].includes(i % 7) ? "top-4" : "-top-7.5"} ${i < 14 ? "right-0" : "left-[50%] -translate-x-[50%]"} ${i > 356 && "left-[0%] translate-x-[0]"}`}
+            >
+              {new Date(d).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </div>
+            <div
+              className={`h-3.5 w-3.5 rounded-[0.3rem] ${completedDates.has(d) ? "bg-[#07551C]" : "bg-[#383A4C]"}`}
+            ></div>
+          </div>
         ))}
       </div>
     </ScrollToEndX>
