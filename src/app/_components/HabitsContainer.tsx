@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
+import clsx from "clsx";
 
 const HabitsContainer = () => {
   const {
@@ -277,24 +278,66 @@ const CompletionGraph = ({
     <ScrollToEndX className="no-scrollbar">
       <div className="flex h-[125px] w-[900px] flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-0.75">
         {pastDatesList.map((d, i) => (
-          <div key={i} className="group relative">
-            {/* programmatically determining top and left here to deal with tooltip getting clipped by overflow. todo: deal with this using react's portals instead */}
-            <div
-              className={`tooltip bg-foreground text-background invisible absolute z-50 w-fit max-w-xs rounded-md px-3 py-1.5 text-xs group-hover:visible ${[5, 6].includes(i % 7) ? "top-4" : "-top-7.5"} ${i < 14 ? "right-0" : "left-[50%] -translate-x-[50%]"} ${i > 356 && "left-[0%] translate-x-[0]"}`}
-            >
-              {new Date(d).toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </div>
-            <div
-              className={`h-3.5 w-3.5 rounded-[0.3rem] ${completedDates.has(d) ? "bg-[#07551C]" : "bg-[#383A4C]"}`}
-            ></div>
-          </div>
+          <CompletionWithTooltip
+            index={i}
+            date={d}
+            completed={completedDates.has(d)}
+          />
         ))}
       </div>
     </ScrollToEndX>
+  );
+};
+
+const CompletionWithTooltip = ({
+  index: i,
+  date: d,
+  completed,
+}: {
+  index: number;
+  date: string;
+  completed: boolean;
+}) => {
+  const isTopRow = [5, 6].includes(i % 7);
+  const isFirstTwoWeeks = i < 14;
+  const isThirdWeek = i >= 14 && i < 21;
+  const isEndOfYear = i > 356;
+
+  const tooltipStyles = clsx(
+    // Base tooltip styling
+    "tooltip invisible absolute z-50 w-fit max-w-xs rounded-md px-3 py-1.5 text-xs bg-foreground text-background",
+
+    // Hover behavior
+    "group-hover:visible",
+
+    // Vertical positioning
+    isTopRow ? "top-4" : "-top-7.5",
+
+    // Horizontal positioning
+    isFirstTwoWeeks
+      ? "right-0"
+      : isThirdWeek
+        ? "left-[50%] -translate-x-[75%]"
+        : "left-[50%] -translate-x-[50%]",
+
+    // Edge override (end of year)
+    isEndOfYear && "left-[0%] translate-x-[0]",
+  );
+
+  return (
+    <div key={i} className="group relative">
+      {/* programmatically determining top and left here to deal with tooltip getting clipped by overflow. todo: deal with this using react's portals instead */}
+      <div className={tooltipStyles}>
+        {new Date(d).toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })}
+      </div>
+      <div
+        className={`h-3.5 w-3.5 rounded-[0.3rem] ${completed ? "bg-[#07551C]" : "bg-[#383A4C]"}`}
+      ></div>
+    </div>
   );
 };
 
