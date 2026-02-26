@@ -327,7 +327,7 @@ const CompletionWithTooltip = ({
     "tooltip invisible absolute z-50 w-fit max-w-xs rounded-md px-3 py-1.5 text-xs bg-foreground text-background",
 
     // Hover behavior
-    "group-hover:visible",
+    "group-hover:visible hover:invisible",
 
     // Vertical positioning
     isTopRow ? "top-4" : "-top-7.5",
