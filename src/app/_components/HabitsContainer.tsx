@@ -207,10 +207,10 @@ const Habit = ({ data: habit }: { data: Habit }) => {
 
   return (
     <div
-      className="habit-card h-[185px] w-full max-w-sm rounded-xl bg-[#0F143B] px-3.5 pt-2 pb-3.5"
+      className="habit-card h-[185px] w-full max-w-sm rounded-xl bg-[#0F143B] px-3.5 pt-2 pb-3.5 pl-1"
       key={habit.id}
     >
-      <div className="habit-top-row flex h-[34px] items-center justify-between pr-1">
+      <div className="habit-top-row flex h-[34px] items-center justify-between pr-1 pl-3.5">
         <div className="habit-name flex h-8 w-[70%] items-center">
           {renameHabitMode ? (
             <Input
@@ -260,7 +260,19 @@ const Habit = ({ data: habit }: { data: Habit }) => {
         </div>
       </div>
 
-      <CompletionGraph data={habit.completedDates} />
+      <div className="mt-1 flex gap-1">
+        <div className="flex w-2.5 flex-col items-center gap-y-0.75 overflow-clip text-xs text-[#686b82]">
+          <div className="flex h-3.5 items-center"></div>
+          <div className="flex h-3.5 items-center">M</div>
+          <div className="flex h-3.5 items-center"></div>
+          <div className="flex h-3.5 items-center">W</div>
+          <div className="flex h-3.5 items-center"></div>
+          <div className="flex h-3.5 items-center">F</div>
+          <div className="flex h-3.5 items-center"></div>
+        </div>
+
+        <CompletionGraph data={habit.completedDates} />
+      </div>
     </div>
   );
 };
@@ -276,9 +288,10 @@ const CompletionGraph = ({
   }, []);
   return (
     <ScrollToEndX className="no-scrollbar">
-      <div className="flex h-[125px] w-[900px] flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-0.75">
+      <div className="flex h-[116px] w-[900px] flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-0.75">
         {pastDatesList.map((d, i) => (
           <CompletionWithTooltip
+            key={i}
             index={i}
             date={d}
             completed={completedDates.has(d)}
