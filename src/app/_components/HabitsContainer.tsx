@@ -304,13 +304,19 @@ const CompletionGraph = ({
 
 const CompletionWithTooltip = ({
   index: i,
-  date: d,
+  date,
   completed,
 }: {
   index: number;
   date: string;
   completed: boolean;
 }) => {
+  const [y, m, d] = date.split("-").map((x) => Number(x)) as [
+    number,
+    number,
+    number,
+  ];
+
   const isTopRow = [5, 6].includes(i % 7);
   const isFirstTwoWeeks = i < 14;
   const isThirdWeek = i >= 14 && i < 21;
@@ -341,7 +347,7 @@ const CompletionWithTooltip = ({
     <div key={i} className="group relative">
       {/* programmatically determining top and left here to deal with tooltip getting clipped by overflow. todo: deal with this using react's portals instead */}
       <div className={tooltipStyles}>
-        {new Date(d).toLocaleDateString("en-US", {
+        {new Date(y, (m - 1) % 12, d).toLocaleDateString("en-US", {
           month: "long",
           day: "numeric",
           year: "numeric",
