@@ -284,12 +284,34 @@ const CompletionGraph = ({
 }) => {
   const [pastDatesList, setPastDatesList] = useState<string[]>([]);
   useEffect(() => {
-    setPastDatesList(getLastNdates(371));
+    setPastDatesList(getLastNdates(369));
   }, []);
+
+  // Using the index of the last saturday to render previous weeks as a complete grid and current week as an ongoing row, to match day indicators (M,W,F)
+  const lastSatIndex = pastDatesList.findIndex((date) => {
+    const [y, m, d] = date.split("-").map((x) => Number(x)) as [
+      number,
+      number,
+      number,
+    ];
+
+    return new Date(y, (m - 1) % 12, d).getDay() === 6;
+  });
   return (
     <ScrollToEndX className="no-scrollbar">
       <div className="flex h-[116px] w-[900px] flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-0.75">
-        {pastDatesList.map((d, i) => (
+        {Array.from({ length: 7 - lastSatIndex }, (_, i) => (
+          <div key={i} className="h-3.5"></div>
+        ))}
+        {pastDatesList.slice(0, lastSatIndex).map((d, i) => (
+          <CompletionWithTooltip
+            key={i}
+            index={i}
+            date={d}
+            completed={completedDates.has(d)}
+          />
+        ))}
+        {pastDatesList.slice(lastSatIndex, pastDatesList.length).map((d, i) => (
           <CompletionWithTooltip
             key={i}
             index={i}
@@ -317,10 +339,18 @@ const CompletionWithTooltip = ({
     number,
   ];
 
-  const isTopRow = [5, 6].includes(i % 7);
-  const isFirstTwoWeeks = i < 14;
-  const isThirdWeek = i >= 14 && i < 21;
-  const isEndOfYear = i > 356;
+  const tooltipDate = new Date(y, (m - 1) % 12, d);
+
+  let horizontalRightPositioning = "";
+  if (i < 7) {
+    horizontalRightPositioning = "right-0";
+  } else if (i >= 7 && i < 14) {
+    horizontalRightPositioning = "-right-[50%]";
+  } else if (i >= 14 && i < 21) {
+    horizontalRightPositioning = "left-[50%] -translate-x-[70%]";
+  } else {
+    horizontalRightPositioning = "left-[50%] -translate-x-[50%]";
+  }
 
   const tooltipStyles = clsx(
     // Base tooltip styling
@@ -330,24 +360,21 @@ const CompletionWithTooltip = ({
     "group-hover:visible hover:invisible",
 
     // Vertical positioning
-    isTopRow ? "top-4" : "-top-7.5",
+    [0, 1].includes(tooltipDate.getDay()) ? "top-4" : "-top-7.5",
 
     // Horizontal positioning
-    isFirstTwoWeeks
-      ? "right-0"
-      : isThirdWeek
-        ? "left-[50%] -translate-x-[75%]"
-        : "left-[50%] -translate-x-[50%]",
+    horizontalRightPositioning,
+    i >= 336 && "left-auto translate-x-0 left-0",
 
     // Edge override (end of year)
-    isEndOfYear && "left-[0%] translate-x-[0]",
+    // isEndOfYear && "left-[0%] translate-x-[0]",
   );
 
   return (
-    <div key={i} className="group relative">
+    <div className="group relative">
       {/* programmatically determining top and left here to deal with tooltip getting clipped by overflow. todo: deal with this using react's portals instead */}
       <div className={tooltipStyles}>
-        {new Date(y, (m - 1) % 12, d).toLocaleDateString("en-US", {
+        {tooltipDate.toLocaleDateString("en-US", {
           month: "long",
           day: "numeric",
           year: "numeric",
