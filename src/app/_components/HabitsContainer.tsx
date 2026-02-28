@@ -284,7 +284,7 @@ const CompletionGraph = ({
 }) => {
   const [pastDatesList, setPastDatesList] = useState<string[]>([]);
   useEffect(() => {
-    setPastDatesList(getLastNdates(369));
+    setPastDatesList(getLastNdates(371));
   }, []);
 
   // Using the index of the last saturday to render previous weeks as a complete grid and current week as an ongoing row, to match day indicators (M,W,F)
@@ -294,9 +294,9 @@ const CompletionGraph = ({
       number,
       number,
     ];
-
     return new Date(y, (m - 1) % 12, d).getDay() === 6;
   });
+
   return (
     <ScrollToEndX className="no-scrollbar">
       <div className="flex h-[116px] w-[900px] flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-0.75">
@@ -311,14 +311,16 @@ const CompletionGraph = ({
             completed={completedDates.has(d)}
           />
         ))}
-        {pastDatesList.slice(lastSatIndex, pastDatesList.length).map((d, i) => (
-          <CompletionWithTooltip
-            key={i}
-            index={i}
-            date={d}
-            completed={completedDates.has(d)}
-          />
-        ))}
+        {pastDatesList
+          .slice(lastSatIndex, pastDatesList.length - (7 - lastSatIndex))
+          .map((d, i) => (
+            <CompletionWithTooltip
+              key={i}
+              index={i}
+              date={d}
+              completed={completedDates.has(d)}
+            />
+          ))}
       </div>
     </ScrollToEndX>
   );
@@ -348,6 +350,8 @@ const CompletionWithTooltip = ({
     horizontalRightPositioning = "-right-[50%]";
   } else if (i >= 14 && i < 21) {
     horizontalRightPositioning = "left-[50%] -translate-x-[70%]";
+  } else if (i >= 21 && i < 28) {
+    horizontalRightPositioning = "left-[50%] -translate-x-[60%]";
   } else {
     horizontalRightPositioning = "left-[50%] -translate-x-[50%]";
   }
