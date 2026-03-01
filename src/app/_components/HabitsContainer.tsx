@@ -84,6 +84,8 @@ const Habit = ({ data: habit }: { data: Habit }) => {
           h.id === habitId
             ? {
                 ...h,
+                streak: h.streak + 1,
+                last_completion_date: new Date().toISOString().slice(0, 10),
                 completedDates: new Set([...h.completedDates, todayUTC]),
               }
             : h,
@@ -249,7 +251,17 @@ const Habit = ({ data: habit }: { data: Habit }) => {
 
         <div className="flex w-[30%] items-center justify-end gap-2">
           <div className="w-[65%] text-right text-white">
-            🔥 {habit.completedDates.size}
+            {habit.streak > 0
+              ? habit.last_completion_date ===
+                new Date().toISOString().slice(0, 10)
+                ? "🔥"
+                : "⏳"
+              : habit.last_completion_date &&
+                  habit.last_completion_date >
+                    new Date(Date.now() - 864e7).toISOString().slice(0, 10)
+                ? "💔"
+                : "❄️"}{" "}
+            {habit.streak}
           </div>
           <Button
             variant="ghost"

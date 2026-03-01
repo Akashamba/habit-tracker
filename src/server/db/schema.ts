@@ -1,4 +1,11 @@
-import { text, uuid, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import {
+  text,
+  uuid,
+  timestamp,
+  uniqueIndex,
+  integer,
+  date,
+} from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
 import { createTableWithPrefix } from "./create-table";
 import { sql } from "drizzle-orm";
@@ -9,6 +16,9 @@ export const habit = createTableWithPrefix("habit", () => ({
     .references(() => user.id, { onDelete: "cascade" })
     .notNull(),
   name: text("name").notNull(),
+  last_completion_date: date("last_completion_date"),
+  streak: integer("streak").notNull().default(0),
+  longest_streak: integer("longest_streak").notNull().default(0),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 }));

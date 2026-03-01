@@ -4,6 +4,13 @@ import { habit, habit_completions } from "~/server/db/schema";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 
+function getYesterdayDate() {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(0, 0, 0, 0);
+  return yesterday;
+}
+
 export const habits = createTRPCRouter({
   createHabit: protectedProcedure
     .input(z.object({ name: z.string() }))
@@ -50,15 +57,33 @@ export const habits = createTRPCRouter({
 
       console.log(`Retrieved ${habits.length} habits`);
 
-      const flattenedHabits = habits.map(({ habit_completions, ...habit }) => ({
-        ...habit,
-        completedDates: new Set(
-          habit_completions.map(
-            ({ completedAt: d }) =>
-              `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`,
+      // Flatten completions and validate streaks
+      const flattenedHabits = habits.map(({ habit_completions, ...habit }) => {
+        let validatedStreak = habit.streak;
+        if (habit.last_completion_date) {
+          const yesterday_date = getYesterdayDate();
+          const last_completion_date = new Date(habit.last_completion_date);
+          last_completion_date.setHours(0, 0, 0, 0);
+
+          // if the last_completion_date older than yesterday
+          if (last_completion_date.getTime() < yesterday_date.getTime()) {
+            // only update the data to be sent to the client, not db
+            validatedStreak = 0;
+            // if last_completion_date is yesterday or today, or there is no last_completion_date, do nothing
+          }
+        }
+
+        return {
+          ...habit,
+          streak: validatedStreak,
+          completedDates: new Set(
+            habit_completions.map(
+              ({ completedAt: d }) =>
+                `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`,
+            ),
           ),
-        ),
-      }));
+        };
+      });
 
       return flattenedHabits;
     } catch (error) {
@@ -95,7 +120,7 @@ export const habits = createTRPCRouter({
     .input(z.object({ habitId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       try {
-        // Enter completion event into completions table
+        // Enter completion event into completions table. Will fail if there is already a completiong for the current day
         const [newCompletion] = await ctx.db
           .insert(habit_completions)
           .values({
@@ -105,6 +130,44 @@ export const habits = createTRPCRouter({
 
         console.log(`Inserted a completion of habit id ${input.habitId}`);
 
+        const [currentHabit] = await ctx.db
+          .select()
+          .from(habit)
+          .where(eq(habit.id, input.habitId));
+        let updated_streak;
+        if (currentHabit?.last_completion_date) {
+          const last_completion_date = new Date(
+            currentHabit?.last_completion_date,
+          );
+          const yesterday_date = getYesterdayDate();
+          if (last_completion_date.getTime() < yesterday_date.getTime()) {
+            updated_streak = 1;
+          } else {
+            updated_streak = currentHabit?.streak + 1;
+          }
+        } else {
+          updated_streak = 1;
+        }
+
+        const updated_longest_streak = Math.max(
+          currentHabit?.longest_streak!,
+          updated_streak,
+        );
+
+        await ctx.db
+          .update(habit)
+          .set({
+            last_completion_date: newCompletion?.completedAt
+              .toISOString()
+              .slice(0, 10),
+            streak: updated_streak,
+            longest_streak: updated_longest_streak,
+          })
+          .where(eq(habit.id, input.habitId));
+
+        console.log(`Updated Streak of habit id ${input.habitId}`);
+
+        // Essential for undo
         return newCompletion;
       } catch (error) {
         console.error("Error while marking a completion", error);
