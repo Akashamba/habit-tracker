@@ -187,3 +187,8 @@ Index: UNIQUE(habit_id, date)
 - [ ] optimistic update for create
 - [ ] completion graph elements should not be selectable
 - [ ] db push when there are tables already fails because of the sql expression column in the UNIQUE constraint of the habit_completions schema
+  - Temp solution: manually drop the index on neon and then push the new schema, which will automatically add the schema
+
+# Notes about timezone
+
+Store date in UTC, store timezone separately. Do all time calculations in UTC, convert for display only. FWIW Luxon is a great time/date library, used this in work for scheduling for an automated patching system.
