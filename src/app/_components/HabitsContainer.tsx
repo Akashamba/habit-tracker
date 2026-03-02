@@ -48,9 +48,11 @@ const HabitsContainer = () => {
 
   return (
     <div className="mx-5 flex flex-col items-center gap-5 py-5">
-      {habits?.map((habit) => (
-        <Habit data={habit} key={habit.id} />
-      ))}
+      {habits
+        ?.sort((a, b) => a.id.localeCompare(b.id))
+        .map((habit) => (
+          <Habit data={habit} key={habit.id} />
+        ))}
     </div>
   );
 };
