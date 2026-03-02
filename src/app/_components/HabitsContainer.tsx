@@ -109,6 +109,11 @@ const Habit = ({ data: habit }: { data: Habit }) => {
           h.id === habit.id
             ? {
                 ...h,
+                streak: h.streak - 1,
+                last_completion_date:
+                  h.streak - 1 > 0
+                    ? new Date(Date.now() - 86400000).toISOString().slice(0, 10)
+                    : null,
                 completedDates: new Set(
                   [...h.completedDates].filter((d) => d !== todayUTC),
                 ),

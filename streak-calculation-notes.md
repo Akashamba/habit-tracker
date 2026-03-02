@@ -61,13 +61,14 @@ sql`DATE(${table.completedAt})`,
     - if new streak > longest_streak: longest_streak = streak
     2. update last_completion_date in Habit table to today
 
-### ToDos
+- on undo completion
+  - delete completion (already doing this)
+  - Deal with longest_streak later, or leave it as append only field
+  - decrement streak
+  - if streak === 0: set longest_completion_date to null
+  - if streak > 0: set longest_completion_date to current date - 1
 
-- ensure concurrency through transactions and row level lock
-- standardize today and yesterday in the backend
-- add timezones down the line (store user timezone on user table and render habits based on their home timezone)
-
-# Implementation Steps
+# Todos and Implementation Steps
 
 [X] update schema
 [X] push schema
@@ -75,6 +76,11 @@ sql`DATE(${table.completedAt})`,
 [x] seed db with appropriate streak values to test with
 [x] move logic from script to routers
 [x] test
-[ ] add transaction and locks
+[x] add transaction and locks
+[x] create logic for undo complete
+[ ] add ability to undo within a day to the ui
+[ ] test
 [ ] run one time script to manually calculate and update streaks, longest streaks, and last_completion_date for all habits
-[ ] create logic for undo complete
+[ ] timezones
+[ ] update longest_streak correctly when undoing a completion, or leave it as append only field
+[ ] bug: undoing a habit with streak 1 and setting last completion to null shows snowflake on the ui instead of broken heart
