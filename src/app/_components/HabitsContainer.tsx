@@ -147,54 +147,42 @@ const Habit = ({ data: habit }: { data: Habit }) => {
   });
 
   const handleCheckedChange = async () => {
-    alert("Hello!");
-  };
+    // Complete or undo today's completion
+    if (!habit.completedDates.has(currentDate)) {
+      completeHabit.mutate(
+        { habitId: habit.id },
+        {
+          onError: (_err, _vars, ctx) => {
+            utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
+          },
 
-  const handleComplete = async () => {
-    completeHabit.mutate(
-      { habitId: habit.id },
-      {
-        onError: (_err, _vars, ctx) => {
-          utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
-        },
+          onSuccess: () => {
+            toast.success("Completed!");
+          },
 
-        onSuccess: (data) => {
-          toast.success("Completed!", {
-            action: {
-              label: "Undo",
-              onClick: () => {
-                if (data?.id) {
-                  void handleUndo(data?.id);
-                }
-              },
-            },
-          });
+          onSettled: () => {
+            void utils.habitsRouter.getHabits.invalidate();
+          },
         },
+      );
+    } else {
+      undoComplete.mutate(
+        { habitId: habit.id },
+        {
+          onError: (_err, _vars, ctx) => {
+            utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
+          },
 
-        onSettled: () => {
-          void utils.habitsRouter.getHabits.invalidate();
-        },
-      },
-    );
-  };
+          onSuccess: () => {
+            toast.success("Marked not done");
+          },
 
-  const handleUndo = async (id: string) => {
-    undoComplete.mutate(
-      { completionId: id },
-      {
-        onError: (_err, _vars, ctx) => {
-          utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
+          onSettled: () => {
+            void utils.habitsRouter.getHabits.invalidate();
+          },
         },
-
-        onSuccess: () => {
-          toast.success("Marked not done");
-        },
-
-        onSettled: () => {
-          void utils.habitsRouter.getHabits.invalidate();
-        },
-      },
-    );
+      );
+    }
   };
 
   const handleRename = async ({ newName }: { newName: string }) => {
@@ -230,6 +218,7 @@ const Habit = ({ data: habit }: { data: Habit }) => {
             <Checkbox
               name="habit-checkbox"
               onCheckedChange={handleCheckedChange}
+              disabled={completeHabit.isPending || undoComplete.isPending}
               checked={habit.completedDates.has(currentDate)}
             />
           </div>

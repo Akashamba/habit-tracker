@@ -2,7 +2,13 @@ import z from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { habit, habit_completions } from "~/server/db/schema";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
+
+function getTodayDate() {
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  return today;
+}
 
 function getYesterdayDate() {
   const yesterday = new Date();
@@ -194,14 +200,38 @@ export const habits = createTRPCRouter({
     }),
 
   undoComplete: protectedProcedure
-    .input(z.object({ completionId: z.string().uuid() }))
+    .input(z.object({ habitId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
       try {
         // Delete completion event from completions table
         await ctx.db.transaction(async (tx) => {
+          const [toDeleteCompletion] = await tx
+            .select({
+              id: habit_completions.id,
+              completedAt: habit_completions.completedAt,
+            })
+            .from(habit_completions)
+            .where(eq(habit_completions.habit_id, input.habitId))
+            .orderBy(desc(habit_completions.completedAt))
+            .limit(1);
+
+          if (!toDeleteCompletion) {
+            throw new Error(
+              `Completion to delete not found for habit id ${input.habitId}`,
+            );
+          }
+
+          const completionDate = new Date(toDeleteCompletion.completedAt);
+          completionDate.setUTCHours(0, 0, 0, 0);
+          const today_date = getTodayDate();
+
+          if (today_date.getTime() !== completionDate.getTime()) {
+            throw new Error("No completions today");
+          }
+
           const [deletedCompletion] = await tx
             .delete(habit_completions)
-            .where(eq(habit_completions.id, input.completionId))
+            .where(eq(habit_completions.id, toDeleteCompletion.id))
             .returning();
 
           if (!deletedCompletion) {
@@ -211,7 +241,7 @@ export const habits = createTRPCRouter({
           const [updatedHabit] = await tx
             .select()
             .from(habit)
-            .where(eq(habit.id, deletedCompletion.habit_id))
+            .where(eq(habit.id, input.habitId))
             .for("update");
 
           if (!updatedHabit) {
@@ -219,7 +249,7 @@ export const habits = createTRPCRouter({
           }
 
           // decrement streak
-          updatedHabit.streak -= 1;
+          updatedHabit.streak = Math.max(updatedHabit.streak - 1, 0);
 
           // decrement last completion date, or set to null if no ongoing streak
           if (updatedHabit.streak === 0) {
@@ -228,19 +258,19 @@ export const habits = createTRPCRouter({
             updatedHabit.last_completion_date = new Date(Date.now() - 86400000)
               .toISOString()
               .slice(0, 10);
-
-            // TODO: update longest_streak correctly when undoing a completion, or leave it as append only field
-
-            await tx
-              .update(habit)
-              .set({
-                streak: updatedHabit.streak,
-                last_completion_date: updatedHabit.last_completion_date,
-              })
-              .where(eq(habit.id, updatedHabit.id));
           }
 
-          console.log(`Deleted a completion of id ${input.completionId}`);
+          // TODO: update longest_streak correctly when undoing a completion, or leave it as append only field
+
+          await tx
+            .update(habit)
+            .set({
+              streak: updatedHabit.streak,
+              last_completion_date: updatedHabit.last_completion_date,
+            })
+            .where(eq(habit.id, updatedHabit.id));
+
+          console.log(`Deleted a completion of id ${deletedCompletion.id}`);
         });
 
         return { status: "success" };

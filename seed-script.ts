@@ -12,11 +12,7 @@ import {
   type HabitCompletion,
 } from "~/server/db/schema";
 
-const habitIds = [
-  "af501f6b-9954-4ba6-b7ef-6dece58f067b",
-  "c1152fb4-b568-49ec-888e-614805381320",
-  "dbe9a777-e481-40d9-9f58-78dde9961de8",
-];
+const habitIds = ["", "", ""];
 
 // need to insert completions from feb 14 onwards (inclusive)
 const fakeCompletions: HabitCompletion[] = [];
@@ -28,7 +24,7 @@ const habitUpdate: {
 
 habitIds.forEach((id, j) => {
   let i;
-  for (i = 14; i < 28 + j; i++) {
+  for (i = 14; i < 29 + j; i++) {
     fakeCompletions.push({
       id: randomUUID(),
       habit_id: id,
