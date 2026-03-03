@@ -1,0 +1,8 @@
+- [x] Duplicated UTC date string — built 3x, should be one utility
+- [x] Mutations in component — extract to useHabitMutations hook
+- [x] IIFE in JSX — move month stats to useMemo
+- [x] Streak display inline — extract <StreakBadge>
+- [x] currentDate in state — it's a derived value, not state; compute it directly
+- [x] Handler logic in component — handleCheckedChange and handleRename should live in the hook
+- [x] Magic strings/numbers — #0F143B, 86400000, 14pt etc. should be constants/tokens
+- [x] Month stats logic — complex enough to warrant its own utility function

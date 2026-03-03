@@ -3,6 +3,8 @@ import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { habit, habit_completions } from "~/server/db/schema";
 import { TRPCError } from "@trpc/server";
 import { desc, eq } from "drizzle-orm";
+import { toUTCDateISO, toUTCDateString } from "~/utils/getUTCDate";
+import { MS_PER_DAY } from "~/utils/constants";
 
 function getTodayDate() {
   const today = new Date();
@@ -90,10 +92,7 @@ export const habits = createTRPCRouter({
           ...habit,
           streak: validatedStreak,
           completedDates: new Set(
-            habit_completions.map(
-              ({ completedAt: d }) =>
-                `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`,
-            ),
+            habit_completions.map(({ completedAt: d }) => toUTCDateString(d)),
           ),
         };
       });
@@ -175,9 +174,7 @@ export const habits = createTRPCRouter({
           await tx
             .update(habit)
             .set({
-              last_completion_date: newCompletion?.completedAt
-                .toISOString()
-                .slice(0, 10),
+              last_completion_date: toUTCDateISO(newCompletion?.completedAt),
               streak: updated_streak,
               longest_streak: updated_longest_streak,
             })
@@ -255,9 +252,9 @@ export const habits = createTRPCRouter({
           if (updatedHabit.streak === 0) {
             updatedHabit.last_completion_date = null;
           } else {
-            updatedHabit.last_completion_date = new Date(Date.now() - 86400000)
-              .toISOString()
-              .slice(0, 10);
+            updatedHabit.last_completion_date = toUTCDateISO(
+              new Date(Date.now() - MS_PER_DAY),
+            );
           }
 
           // TODO: update longest_streak correctly when undoing a completion, or leave it as append only field

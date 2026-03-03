@@ -123,6 +123,11 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@theme {
+  --color-card-bg: #0f143b;
+  --color-muted: #686b82;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -19,6 +19,25 @@ import {
 } from "./dropdown-menu";
 import { Checkbox } from "./checkbox";
 import clsx from "clsx";
+import { toUTCDateString } from "~/utils/getUTCDate";
+import useHabitMutations from "~/hooks/useHabitMutations";
+
+function getMonthStats(completedDates: Set<string>) {
+  const today = new Date();
+  const currentMonth = today.getMonth(); // 0-indexed
+  const currentYear = today.getFullYear();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  // filter completions for current month
+  const currentMonthCompletions = Array.from(completedDates).filter(
+    (dateStr) => {
+      const d = new Date(dateStr);
+      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+    },
+  );
+
+  return `${currentMonthCompletions.length} / ${daysInMonth}`;
+}
 
 const HabitsContainer = () => {
   const {
@@ -61,165 +80,41 @@ const HabitsContainer = () => {
 export default HabitsContainer;
 
 const Habit = ({ data: habit }: { data: Habit }) => {
-  const [currentDate, setCurrentDate] = useState<string>("");
-  const utils = api.useUtils();
-
-  useEffect(() => {
-    const d = new Date();
-    setCurrentDate(
-      `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`,
-    );
-  }, []);
-
-  const completeHabit = api.habitsRouter.completeHabit.useMutation({
-    onMutate: async ({ habitId }) => {
-      await utils.habitsRouter.getHabits.cancel();
-
-      const prev = utils.habitsRouter.getHabits.getData();
-
-      const d = new Date();
-      const todayUTC = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
-
-      utils.habitsRouter.getHabits.setData(undefined, (old) =>
-        old?.map((h) =>
-          h.id === habitId
-            ? {
-                ...h,
-                streak: h.streak + 1,
-                last_completion_date: new Date().toISOString().slice(0, 10),
-                completedDates: new Set([...h.completedDates, todayUTC]),
-              }
-            : h,
-        ),
-      );
-      return { prev };
-    },
-  });
-
-  const undoComplete = api.habitsRouter.undoComplete.useMutation({
-    onMutate: async () => {
-      await utils.habitsRouter.getHabits.cancel();
-
-      const prev = utils.habitsRouter.getHabits.getData();
-
-      const d = new Date();
-      const todayUTC = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
-
-      utils.habitsRouter.getHabits.setData(undefined, (old) =>
-        old?.map((h) =>
-          h.id === habit.id
-            ? {
-                ...h,
-                streak: h.streak - 1,
-                last_completion_date:
-                  h.streak - 1 > 0
-                    ? new Date(Date.now() - 86400000).toISOString().slice(0, 10)
-                    : null,
-                completedDates: new Set(
-                  [...h.completedDates].filter((d) => d !== todayUTC),
-                ),
-              }
-            : h,
-        ),
-      );
-      return { prev };
-    },
-  });
-
-  const renameHabit = api.habitsRouter.renameHabit.useMutation({
-    onMutate: async ({ habitId, newName }) => {
-      await utils.habitsRouter.getHabits.cancel();
-
-      const prev = utils.habitsRouter.getHabits.getData();
-
-      utils.habitsRouter.getHabits.setData(undefined, (old) =>
-        old?.map((h) =>
-          h.id === habitId
-            ? {
-                ...h,
-                name: newName,
-              }
-            : h,
-        ),
-      );
-      return { prev };
-    },
-  });
-
-  const handleCheckedChange = async () => {
-    // Complete or undo today's completion
-    if (!habit.completedDates.has(currentDate)) {
-      completeHabit.mutate(
-        { habitId: habit.id },
-        {
-          onError: (_err, _vars, ctx) => {
-            utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
-          },
-
-          onSuccess: () => {
-            toast.success("Completed!");
-          },
-
-          onSettled: () => {
-            void utils.habitsRouter.getHabits.invalidate();
-          },
-        },
-      );
-    } else {
-      undoComplete.mutate(
-        { habitId: habit.id },
-        {
-          onError: (_err, _vars, ctx) => {
-            utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
-          },
-
-          onSuccess: () => {
-            toast.success("Marked not done");
-          },
-
-          onSettled: () => {
-            void utils.habitsRouter.getHabits.invalidate();
-          },
-        },
-      );
-    }
-  };
-
-  const handleRename = async ({ newName }: { newName: string }) => {
-    renameHabit.mutate(
-      { habitId: habit.id, newName: newName },
-      {
-        onError: (_err, _vars, ctx) => {
-          utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
-        },
-
-        onSuccess: () => {
-          toast.success("Renamed");
-        },
-
-        onSettled: () => {
-          void utils.habitsRouter.getHabits.invalidate();
-        },
-      },
-    );
-  };
+  const { handleCheckedChange, handleRename, completeHabit, undoComplete } =
+    useHabitMutations(habit);
 
   const [renameHabitMode, setRenameHabitMode] = useState(false);
   const [newHabitName, setNewHabitName] = useState(habit.name);
 
+  const handleRenameKeyDown = async (
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key === "Escape") {
+      setNewHabitName(habit.name);
+      setRenameHabitMode(false);
+    }
+    if (e.key === "Enter") {
+      setRenameHabitMode(false);
+      if (newHabitName !== habit.name) {
+        await handleRename({ newName: newHabitName });
+      }
+    }
+  };
+
   return (
     <div
-      className="habit-card h-[200px] w-full max-w-sm rounded-xl bg-[#0F143B] px-3.5 pt-2 pb-3.5 pl-1"
+      className="habit-card bg-card-bg h-[200px] w-full max-w-sm rounded-xl px-3.5 pt-2 pb-3.5 pl-1"
       key={habit.id}
     >
-      <div className="habit-top-row flex h-[34px] items-center justify-between pr-1 pl-3.5">
+      {/* Top Row: Habit name and options */}
+      <div className="habit-top-row mb-1.5 flex h-[34px] items-center justify-between pr-1 pl-3.5">
         <div className="top-row-left-side flex items-center gap-2">
           <div>
             <Checkbox
               name="habit-checkbox"
               onCheckedChange={handleCheckedChange}
               disabled={completeHabit.isPending || undoComplete.isPending}
-              checked={habit.completedDates.has(currentDate)}
+              checked={habit.completedDates.has(toUTCDateString(new Date()))}
             />
           </div>
 
@@ -231,24 +126,13 @@ const Habit = ({ data: habit }: { data: Habit }) => {
                 value={newHabitName}
                 onChange={(e) => setNewHabitName(e.target.value)}
                 autoFocus
-                className="m-0 mr-2 rounded-none border-0 border-none p-0 text-[14pt] font-medium text-white outline-0 focus:ring-0"
-                onKeyDown={async (e) => {
-                  if (e.key === "Escape") {
-                    setNewHabitName(habit.name);
-                    setRenameHabitMode(false);
-                  }
-                  if (e.key === "Enter") {
-                    setRenameHabitMode(false);
-                    if (newHabitName !== habit.name) {
-                      await handleRename({ newName: newHabitName });
-                    }
-                  }
-                }}
+                className="m-0 mr-2 rounded-none border-0 border-none p-0 text-lg font-medium text-white outline-0 focus:ring-0"
+                onKeyDown={(e) => handleRenameKeyDown(e)}
                 onBlur={() => setRenameHabitMode(false)}
               />
             ) : (
               // habit name
-              <div className="flex w-full items-center text-[14pt] font-medium text-[#fff]">
+              <div className="flex w-full items-center text-lg font-medium text-[#fff]">
                 <span
                   className="max-w-60 cursor-pointer truncate"
                   onClick={() => setRenameHabitMode(true)}
@@ -263,62 +147,19 @@ const Habit = ({ data: habit }: { data: Habit }) => {
         <HabitDropdownMenu habitId={habit.id} />
       </div>
 
-      <div className="mt-1 flex gap-1">
-        <div className="flex w-2.5 flex-col items-center gap-y-0.75 overflow-clip text-xs text-[#686b82]">
-          <div className="flex h-3.5 items-center"></div>
-          <div className="flex h-3.5 items-center">M</div>
-          <div className="flex h-3.5 items-center"></div>
-          <div className="flex h-3.5 items-center">W</div>
-          <div className="flex h-3.5 items-center"></div>
-          <div className="flex h-3.5 items-center">F</div>
-          <div className="flex h-3.5 items-center"></div>
-        </div>
+      {/* Middle Row: Completion Graph */}
+      <CompletionGraph data={habit.completedDates} />
 
-        <CompletionGraph data={habit.completedDates} />
-      </div>
-
-      <div className="my-2.5 flex w-full justify-between pl-3.5">
-        <div className="text-xs text-[#686b82]">
+      {/* Bottom Row: Stats */}
+      <div className="mt-1.5 flex w-full items-center justify-between pl-3.5">
+        <div className="text-muted text-xs">
           <span className="font-bold">
-            {(() => {
-              const today = new Date();
-              const currentMonth = today.getMonth(); // 0-indexed
-              const currentYear = today.getFullYear();
-              const daysInMonth = new Date(
-                currentYear,
-                currentMonth + 1,
-                0,
-              ).getDate();
-
-              // filter completions for current month
-              const currentMonthCompletions = Array.from(
-                habit.completedDates,
-              ).filter((dateStr) => {
-                const d = new Date(dateStr);
-                return (
-                  d.getMonth() === currentMonth &&
-                  d.getFullYear() === currentYear
-                );
-              });
-
-              return `${currentMonthCompletions.length} / ${daysInMonth}`;
-            })()}
+            {getMonthStats(habit.completedDates)}
           </span>{" "}
           days this month
         </div>
 
-        <div
-          className={clsx(
-            "flex cursor-default items-center gap-1.5 text-xs",
-            habit.streak > 0 ? "text-[#fbbf24]" : "text-slate-400",
-          )}
-        >
-          <span className="text-sm">{habit.streak > 0 ? "🔥" : "❄️"}</span>
-          <span className="text-xs font-bold">{habit.streak}</span>
-          <span className="text-xs font-light">
-            {habit.streak !== 1 ? "days" : "day"}
-          </span>
-        </div>
+        <StreakBadge streak={habit.streak} />
       </div>
     </div>
   );
@@ -345,22 +186,22 @@ const CompletionGraph = ({
   });
 
   return (
-    <ScrollToEndX className="no-scrollbar">
-      <div className="flex h-[116px] w-[900px] flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-0.75">
-        {Array.from({ length: 7 - lastSatIndex }, (_, i) => (
-          <div key={i} className="h-3.5"></div>
-        ))}
-        {pastDatesList.slice(0, lastSatIndex).map((d, i) => (
-          <CompletionWithTooltip
-            key={i}
-            index={i}
-            date={d}
-            completed={completedDates.has(d)}
-          />
-        ))}
-        {pastDatesList
-          .slice(lastSatIndex, pastDatesList.length - (7 - lastSatIndex))
-          .map((d, i) => (
+    <div className="flex gap-1">
+      <div className="text-muted flex w-2.5 flex-col items-center gap-y-0.75 overflow-clip text-xs">
+        <div className="flex h-3.5 items-center"></div>
+        <div className="flex h-3.5 items-center">M</div>
+        <div className="flex h-3.5 items-center"></div>
+        <div className="flex h-3.5 items-center">W</div>
+        <div className="flex h-3.5 items-center"></div>
+        <div className="flex h-3.5 items-center">F</div>
+        <div className="flex h-3.5 items-center"></div>
+      </div>
+      <ScrollToEndX className="no-scrollbar">
+        <div className="flex h-[116px] w-[900px] flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-0.75">
+          {Array.from({ length: 7 - lastSatIndex }, (_, i) => (
+            <div key={i} className="h-3.5"></div>
+          ))}
+          {pastDatesList.slice(0, lastSatIndex).map((d, i) => (
             <CompletionWithTooltip
               key={i}
               index={i}
@@ -368,8 +209,19 @@ const CompletionGraph = ({
               completed={completedDates.has(d)}
             />
           ))}
-      </div>
-    </ScrollToEndX>
+          {pastDatesList
+            .slice(lastSatIndex, pastDatesList.length - (7 - lastSatIndex))
+            .map((d, i) => (
+              <CompletionWithTooltip
+                key={i}
+                index={i}
+                date={d}
+                completed={completedDates.has(d)}
+              />
+            ))}
+        </div>
+      </ScrollToEndX>
+    </div>
   );
 };
 
@@ -483,7 +335,7 @@ const HabitDropdownMenu = ({ habitId }: { habitId: string }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-32 border-[#0F143B] bg-[#020416]"
+        className="border-card-bg w-32 bg-[#020416]"
       >
         <DropdownMenuGroup>
           <DropdownMenuItem
@@ -499,7 +351,7 @@ const HabitDropdownMenu = ({ habitId }: { habitId: string }) => {
             Stats
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator className="bg-[#0F143B]" />
+        <DropdownMenuSeparator className="bg-card-bg" />
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={handleDelete} variant="destructive">
             Delete
@@ -507,5 +359,22 @@ const HabitDropdownMenu = ({ habitId }: { habitId: string }) => {
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+};
+
+const StreakBadge = ({ streak }: { streak: number }) => {
+  return (
+    <div
+      className={clsx(
+        "flex cursor-default items-center gap-1.5 text-xs",
+        streak > 0 ? "text-amber-400" : "text-slate-400",
+      )}
+    >
+      <span className="text-sm">{streak > 0 ? "🔥" : "❄️"}</span>
+      <span className="text-xs font-bold">{streak}</span>
+      <span className="text-xs font-light">
+        {streak !== 1 ? "days" : "day"}
+      </span>
+    </div>
   );
 };
