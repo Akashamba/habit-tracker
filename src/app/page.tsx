@@ -19,6 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./_components/avatar";
 import { Toaster } from "sonner";
 import SignedOutPage from "./_components/SignedOutPage";
 import Image from "next/image";
+import { ChevronRight } from "lucide-react";
 
 export default async function Home() {
   const session = await getSession();
@@ -101,7 +102,16 @@ const UserAvatarWithMenu = async ({ user }: { user: User }) => {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-32">
+      <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuItem className="flex items-center gap-2 py-2" disabled>
+          <div className="w-full">
+            <span className="flex items-center truncate text-sm text-gray-600 group-hover:text-gray-600">
+              View Profile <ChevronRight />
+            </span>
+            <div className="truncate">{user.email}</div>
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem disabled>Settings</DropdownMenuItem>
         </DropdownMenuGroup>
