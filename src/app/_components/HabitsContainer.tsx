@@ -278,7 +278,34 @@ const Habit = ({ data: habit }: { data: Habit }) => {
       </div>
 
       <div className="my-2.5 flex w-full justify-between pl-3.5">
-        <div></div>
+        <div className="text-xs text-[#686b82]">
+          <span className="font-bold">
+            {(() => {
+              const today = new Date();
+              const currentMonth = today.getMonth(); // 0-indexed
+              const currentYear = today.getFullYear();
+              const daysInMonth = new Date(
+                currentYear,
+                currentMonth + 1,
+                0,
+              ).getDate();
+
+              // filter completions for current month
+              const currentMonthCompletions = Array.from(
+                habit.completedDates,
+              ).filter((dateStr) => {
+                const d = new Date(dateStr);
+                return (
+                  d.getMonth() === currentMonth &&
+                  d.getFullYear() === currentYear
+                );
+              });
+
+              return `${currentMonthCompletions.length} / ${daysInMonth}`;
+            })()}
+          </span>{" "}
+          days this month
+        </div>
 
         <div
           className={clsx(
