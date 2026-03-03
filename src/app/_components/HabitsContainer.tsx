@@ -21,6 +21,7 @@ import { Checkbox } from "./checkbox";
 import clsx from "clsx";
 import { toUTCDateString } from "~/utils/getUTCDate";
 import useHabitMutations from "~/hooks/useHabitMutations";
+import { HabitsEmptyState } from "./HabitEmptyState";
 
 function getMonthStats(completedDates: Set<string>) {
   const today = new Date();
@@ -59,11 +60,7 @@ const HabitsContainer = () => {
   }
 
   if (habits?.length === 0) {
-    return (
-      <div className="text-center text-white">
-        Get started by creating a new habit!
-      </div>
-    );
+    return <HabitsEmptyState />;
   }
 
   return (
