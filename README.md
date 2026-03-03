@@ -57,6 +57,7 @@ _Production Ready Approach:_
 - X times a week Frequency is an essential
 - show month and day info like github
 - “Streak freeze” token you can spend once per week
+- haptics and animations for all interactions as appropriate. use https://haptics.lochie.me/ for haptics
 
 ### Targeted features
 
@@ -180,14 +181,18 @@ Index: UNIQUE(habit_id, date)
 - [x] completion graph shows the beginning by default, when I actually want it to show the end by default. can be fixed usings refs.
 - [x] make app pretty (loading spinners, align whole app width to sm and center, signed out page, etc)
 - [x] add logo to navbar
-- [ ] streaks currently show only total count, add proper streak calculation
+- [x] streaks currently show only total count, add proper streak calculation
 
 # Known Issues
 
+- [ ] refactor habit component
+- [ ] timezones (new day appears at 8 pm EDT (12 am UTC))
+- [ ] modal for delete
 - [ ] optimistic update for create
 - [ ] completion graph elements should not be selectable
 - [ ] db push when there are tables already fails because of the sql expression column in the UNIQUE constraint of the habit_completions schema
   - Temp solution: manually drop the index on neon and then push the new schema, which will automatically add the schema
+- [ ] update longest_streak correctly when undoing a completion, or leave it as append only field
 
 # Notes about timezone
 

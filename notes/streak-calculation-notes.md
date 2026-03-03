@@ -78,9 +78,6 @@ sql`DATE(${table.completedAt})`,
 [x] test
 [x] add transaction and locks
 [x] create logic for undo complete
-[ ] add ability to undo within a day to the ui
-[ ] test
-[ ] run one time script to manually calculate and update streaks, longest streaks, and last_completion_date for all habits
-[ ] timezones
-[ ] update longest_streak correctly when undoing a completion, or leave it as append only field
-[ ] bug: undoing a habit with streak 1 and setting last completion to null shows snowflake on the ui instead of broken heart
+[x] add ability to undo within a day to the ui
+[x] test
+[x] run one time script to manually calculate and update streaks, longest streaks, and last_completion_date for all habits
