@@ -7,7 +7,7 @@ import type { Habit } from "~/server/api/routers/habits-router";
 import { Button } from "./Button";
 import { toast } from "sonner";
 import Input from "./Input";
-import { Check, Ellipsis, Loader2 } from "lucide-react";
+import { EllipsisVertical, Loader2 } from "lucide-react";
 import { ScrollToEndX } from "./ScrollToEndX";
 import {
   DropdownMenu,
@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
+import { Checkbox } from "./checkbox";
 import clsx from "clsx";
 
 const HabitsContainer = () => {
@@ -84,6 +85,8 @@ const Habit = ({ data: habit }: { data: Habit }) => {
           h.id === habitId
             ? {
                 ...h,
+                streak: h.streak + 1,
+                last_completion_date: new Date().toISOString().slice(0, 10),
                 completedDates: new Set([...h.completedDates, todayUTC]),
               }
             : h,
@@ -107,6 +110,11 @@ const Habit = ({ data: habit }: { data: Habit }) => {
           h.id === habit.id
             ? {
                 ...h,
+                streak: h.streak - 1,
+                last_completion_date:
+                  h.streak - 1 > 0
+                    ? new Date(Date.now() - 86400000).toISOString().slice(0, 10)
+                    : null,
                 completedDates: new Set(
                   [...h.completedDates].filter((d) => d !== todayUTC),
                 ),
@@ -138,51 +146,43 @@ const Habit = ({ data: habit }: { data: Habit }) => {
     },
   });
 
-  const handleComplete = async () => {
-    completeHabit.mutate(
-      { habitId: habit.id },
-      {
-        onError: (_err, _vars, ctx) => {
-          utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
-        },
+  const handleCheckedChange = async () => {
+    // Complete or undo today's completion
+    if (!habit.completedDates.has(currentDate)) {
+      completeHabit.mutate(
+        { habitId: habit.id },
+        {
+          onError: (_err, _vars, ctx) => {
+            utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
+          },
 
-        onSuccess: (data) => {
-          toast.success("Completed!", {
-            action: {
-              label: "Undo",
-              onClick: () => {
-                if (data?.id) {
-                  void handleUndo(data?.id);
-                }
-              },
-            },
-          });
-        },
+          onSuccess: () => {
+            toast.success("Completed!");
+          },
 
-        onSettled: () => {
-          void utils.habitsRouter.getHabits.invalidate();
+          onSettled: () => {
+            void utils.habitsRouter.getHabits.invalidate();
+          },
         },
-      },
-    );
-  };
+      );
+    } else {
+      undoComplete.mutate(
+        { habitId: habit.id },
+        {
+          onError: (_err, _vars, ctx) => {
+            utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
+          },
 
-  const handleUndo = async (id: string) => {
-    undoComplete.mutate(
-      { completionId: id },
-      {
-        onError: (_err, _vars, ctx) => {
-          utils.habitsRouter.getHabits.setData(undefined, ctx?.prev);
-        },
+          onSuccess: () => {
+            toast.success("Marked not done");
+          },
 
-        onSuccess: () => {
-          toast.success("Marked not done");
+          onSettled: () => {
+            void utils.habitsRouter.getHabits.invalidate();
+          },
         },
-
-        onSettled: () => {
-          void utils.habitsRouter.getHabits.invalidate();
-        },
-      },
-    );
+      );
+    }
   };
 
   const handleRename = async ({ newName }: { newName: string }) => {
@@ -209,57 +209,58 @@ const Habit = ({ data: habit }: { data: Habit }) => {
 
   return (
     <div
-      className="habit-card h-[185px] w-full max-w-sm rounded-xl bg-[#0F143B] px-3.5 pt-2 pb-3.5 pl-1"
+      className="habit-card h-[200px] w-full max-w-sm rounded-xl bg-[#0F143B] px-3.5 pt-2 pb-3.5 pl-1"
       key={habit.id}
     >
       <div className="habit-top-row flex h-[34px] items-center justify-between pr-1 pl-3.5">
-        <div className="habit-name flex h-8 w-[70%] items-center">
-          {renameHabitMode ? (
-            <Input
-              value={newHabitName}
-              onChange={(e) => setNewHabitName(e.target.value)}
-              autoFocus
-              className="m-0 mr-2 rounded-none border-0 border-none p-0 text-[14pt] font-medium text-white outline-0 focus:ring-0"
-              onKeyDown={async (e) => {
-                if (e.key === "Escape") {
-                  setNewHabitName(habit.name);
-                  setRenameHabitMode(false);
-                }
-                if (e.key === "Enter") {
-                  setRenameHabitMode(false);
-                  if (newHabitName !== habit.name) {
-                    await handleRename({ newName: newHabitName });
-                  }
-                }
-              }}
-              onBlur={() => setRenameHabitMode(false)}
+        <div className="top-row-left-side flex items-center gap-2">
+          <div>
+            <Checkbox
+              name="habit-checkbox"
+              onCheckedChange={handleCheckedChange}
+              disabled={completeHabit.isPending || undoComplete.isPending}
+              checked={habit.completedDates.has(currentDate)}
             />
-          ) : (
-            <div className="habit-name flex w-full items-center text-[14pt] font-medium text-[#fff]">
-              <span
-                className="max-w-[70%] cursor-pointer truncate"
-                onClick={() => setRenameHabitMode(true)}
-              >
-                {habit.name}
-              </span>
-              <HabitDropdownMenu habitId={habit.id} />
-            </div>
-          )}
+          </div>
+
+          {/* switch between habit info and rename mode */}
+          <div className="flex h-8 items-center">
+            {renameHabitMode ? (
+              // input to rename habit
+              <Input
+                value={newHabitName}
+                onChange={(e) => setNewHabitName(e.target.value)}
+                autoFocus
+                className="m-0 mr-2 rounded-none border-0 border-none p-0 text-[14pt] font-medium text-white outline-0 focus:ring-0"
+                onKeyDown={async (e) => {
+                  if (e.key === "Escape") {
+                    setNewHabitName(habit.name);
+                    setRenameHabitMode(false);
+                  }
+                  if (e.key === "Enter") {
+                    setRenameHabitMode(false);
+                    if (newHabitName !== habit.name) {
+                      await handleRename({ newName: newHabitName });
+                    }
+                  }
+                }}
+                onBlur={() => setRenameHabitMode(false)}
+              />
+            ) : (
+              // habit name
+              <div className="flex w-full items-center text-[14pt] font-medium text-[#fff]">
+                <span
+                  className="max-w-60 cursor-pointer truncate"
+                  onClick={() => setRenameHabitMode(true)}
+                >
+                  {habit.name}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="flex w-[30%] items-center justify-end gap-2">
-          <div className="w-[65%] text-right text-white">
-            🔥 {habit.completedDates.size}
-          </div>
-          <Button
-            variant="ghost"
-            onClick={handleComplete}
-            disabled={habit.completedDates.has(currentDate)}
-            className={`ml-1 w-[35%] rounded-full bg-white/5 ${habit.completedDates.has(currentDate) ? "hover:bg-unset cursor-auto border-white/10 text-[#07551c] opacity-100! hover:text-[#07551c]" : "border border-white/10 bg-white/5 text-white hover:bg-white/10 hover:text-[#d1d1d1]"}`}
-          >
-            <Check size={256} strokeWidth={3} />
-          </Button>
-        </div>
+        <HabitDropdownMenu habitId={habit.id} />
       </div>
 
       <div className="mt-1 flex gap-1">
@@ -274,6 +275,23 @@ const Habit = ({ data: habit }: { data: Habit }) => {
         </div>
 
         <CompletionGraph data={habit.completedDates} />
+      </div>
+
+      <div className="my-2.5 flex w-full justify-between pl-3.5">
+        <div></div>
+
+        <div
+          className={clsx(
+            "flex cursor-default items-center gap-1.5 text-xs",
+            habit.streak > 0 ? "text-[#fbbf24]" : "text-slate-400",
+          )}
+        >
+          <span className="text-sm">{habit.streak > 0 ? "🔥" : "❄️"}</span>
+          <span className="text-xs font-bold">{habit.streak}</span>
+          <span className="text-xs font-light">
+            {habit.streak !== 1 ? "days" : "day"}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -431,12 +449,15 @@ const HabitDropdownMenu = ({ habitId }: { habitId: string }) => {
         <Button
           variant="ghost"
           size="icon"
-          className="hover:bg-unset ml-2 text-[#3a3d58] hover:text-[#d1d1d1] focus-visible:border-transparent focus-visible:ring-0 focus-visible:outline-none aria-expanded:bg-white/5 aria-expanded:text-white"
+          className="ml-2 text-[#3a3d58] hover:bg-white/5 hover:text-[#d1d1d1] focus-visible:border-transparent focus-visible:ring-0 focus-visible:outline-none aria-expanded:bg-white/5 aria-expanded:text-white"
         >
-          <Ellipsis size={12} />
+          <EllipsisVertical size={12} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-32 border-[#0F143B] bg-[#020416]">
+      <DropdownMenuContent
+        align="end"
+        className="w-32 border-[#0F143B] bg-[#020416]"
+      >
         <DropdownMenuGroup>
           <DropdownMenuItem
             className="text-white focus:bg-[#0f122d] focus:text-[#bcbcbc]"
