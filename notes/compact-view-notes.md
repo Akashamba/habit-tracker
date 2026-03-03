@@ -1,0 +1,2 @@
+- Habit Dropdown menu was not showing up earlier but is showing up now, keep an eye put for this
+- overflowing name is not handled well and pushes streak out of view
