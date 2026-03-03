@@ -16,6 +16,7 @@ import { api } from "~/trpc/react";
 
 import { toast } from "sonner";
 import Input from "./Input";
+import { useViewStore } from "~/store/viewStore";
 
 const QuickMenu = () => {
   const utils = api.useUtils();
@@ -25,6 +26,8 @@ const QuickMenu = () => {
       await utils.habitsRouter.getHabits.cancel();
     },
   });
+
+  const toggleView = useViewStore((state) => state.toggleView);
 
   const handleCreateHabit = async (newHabitName: string) => {
     createHabit.mutate(
@@ -44,7 +47,7 @@ const QuickMenu = () => {
         <CreateDialog onClick={handleCreateHabit} />
         <Button onClick={() => alert("Coming soon!")}>Stats</Button>
         <Button onClick={() => alert("Coming soon!")}>Social</Button>
-        <Button onClick={() => alert("Coming soon!")}>Compact View</Button>
+        <Button onClick={toggleView}>Compact View</Button>
         <Button onClick={() => alert("Coming soon!")}>Select Habits</Button>
       </div>
     </div>

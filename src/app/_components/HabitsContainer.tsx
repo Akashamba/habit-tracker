@@ -22,6 +22,7 @@ import clsx from "clsx";
 import { toUTCDateString } from "~/utils/getUTCDate";
 import useHabitMutations from "~/hooks/useHabitMutations";
 import { HabitsEmptyState } from "./HabitEmptyState";
+import { useViewStore } from "~/store/viewStore";
 
 function getMonthStats(completedDates: Set<string>) {
   const today = new Date();
@@ -83,6 +84,8 @@ const Habit = ({ data: habit }: { data: Habit }) => {
   const [renameHabitMode, setRenameHabitMode] = useState(false);
   const [newHabitName, setNewHabitName] = useState(habit.name);
 
+  const compactView = useViewStore((state) => state.compact);
+
   const handleRenameKeyDown = async (
     e: React.KeyboardEvent<HTMLInputElement>,
   ) => {
@@ -100,20 +103,26 @@ const Habit = ({ data: habit }: { data: Habit }) => {
 
   return (
     <div
-      className="habit-card bg-card-bg h-[200px] w-full max-w-sm rounded-xl px-3.5 pt-2 pb-3.5 pl-1"
+      className={clsx(
+        "habit-card bg-card-bg w-full max-w-sm rounded-xl px-3.5 py-2 pl-1",
+        compactView ? "" : "h-50 pb-3.5",
+      )}
       key={habit.id}
     >
       {/* Top Row: Habit name and options */}
-      <div className="habit-top-row mb-1.5 flex h-[34px] items-center justify-between pr-1 pl-3.5">
+      <div
+        className={clsx(
+          "habit-top-row flex h-8.5 items-center justify-between pr-1 pl-3.5",
+          !compactView && "mb-1.5",
+        )}
+      >
         <div className="top-row-left-side flex items-center gap-2">
-          <div>
-            <Checkbox
-              name="habit-checkbox"
-              onCheckedChange={handleCheckedChange}
-              disabled={completeHabit.isPending || undoComplete.isPending}
-              checked={habit.completedDates.has(toUTCDateString(new Date()))}
-            />
-          </div>
+          <Checkbox
+            name="habit-checkbox"
+            onCheckedChange={handleCheckedChange}
+            disabled={completeHabit.isPending || undoComplete.isPending}
+            checked={habit.completedDates.has(toUTCDateString(new Date()))}
+          />
 
           {/* switch between habit info and rename mode */}
           <div className="flex h-8 items-center">
@@ -129,7 +138,7 @@ const Habit = ({ data: habit }: { data: Habit }) => {
               />
             ) : (
               // habit name
-              <div className="flex w-full items-center text-lg font-medium text-[#fff]">
+              <div className="flex w-full items-center text-lg font-medium text-white">
                 <span
                   className="max-w-60 cursor-pointer truncate"
                   onClick={() => setRenameHabitMode(true)}
@@ -141,23 +150,28 @@ const Habit = ({ data: habit }: { data: Habit }) => {
           </div>
         </div>
 
-        <HabitDropdownMenu habitId={habit.id} />
+        <div className="flex gap-1">
+          {compactView && <StreakBadge streak={habit.streak} />}
+          <HabitDropdownMenu habitId={habit.id} />
+        </div>
       </div>
 
       {/* Middle Row: Completion Graph */}
-      <CompletionGraph data={habit.completedDates} />
+      {!compactView && <CompletionGraph data={habit.completedDates} />}
 
       {/* Bottom Row: Stats */}
-      <div className="mt-1.5 flex w-full items-center justify-between pl-3.5">
-        <div className="text-muted text-xs">
-          <span className="font-bold">
-            {getMonthStats(habit.completedDates)}
-          </span>{" "}
-          days this month
-        </div>
+      {!compactView && (
+        <div className="mt-1.5 flex w-full items-center justify-between pl-3.5">
+          <div className="text-muted text-xs">
+            <span className="font-bold">
+              {getMonthStats(habit.completedDates)}
+            </span>{" "}
+            days this month
+          </div>
 
-        <StreakBadge streak={habit.streak} />
-      </div>
+          <StreakBadge streak={habit.streak} />
+        </div>
+      )}
     </div>
   );
 };
@@ -194,7 +208,7 @@ const CompletionGraph = ({
         <div className="flex h-3.5 items-center"></div>
       </div>
       <ScrollToEndX className="no-scrollbar">
-        <div className="flex h-[116px] w-[900px] flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-0.75">
+        <div className="flex h-29 w-225 flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-0.75">
           {Array.from({ length: 7 - lastSatIndex }, (_, i) => (
             <div key={i} className="h-3.5"></div>
           ))}
