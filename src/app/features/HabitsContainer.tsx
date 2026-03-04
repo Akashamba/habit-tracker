@@ -4,11 +4,11 @@ import { api } from "~/trpc/react";
 import { getLastNdates } from "~/utils/getLastNDays";
 import { useEffect, useState } from "react";
 import type { Habit } from "~/server/api/routers/habits-router";
-import { Button } from "./Button";
+import { Button } from "../_components/Button";
 import { toast } from "sonner";
-import Input from "./Input";
+import Input from "../_components/Input";
 import { EllipsisVertical, Loader2 } from "lucide-react";
-import { ScrollToEndX } from "./ScrollToEndX";
+import { ScrollToEndX } from "../_components/ScrollToEndX";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,12 +16,12 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./dropdown-menu";
-import { Checkbox } from "./checkbox";
+} from "../_components/DropdownMenu";
 import clsx from "clsx";
 import { toUTCDateString } from "~/utils/getUTCDate";
 import useHabitMutations from "~/hooks/useHabitMutations";
 import { HabitsEmptyState } from "./HabitEmptyState";
+import { Checkbox } from "../_components/Checkbox";
 
 function getMonthStats(completedDates: Set<string>) {
   const today = new Date();
@@ -100,11 +100,11 @@ const Habit = ({ data: habit }: { data: Habit }) => {
 
   return (
     <div
-      className="habit-card bg-card-bg h-[200px] w-full max-w-sm rounded-xl px-3.5 pt-2 pb-3.5 pl-1"
+      className="habit-card bg-card-bg h-50 w-full max-w-sm rounded-xl px-3.5 pt-2 pb-3.5 pl-1"
       key={habit.id}
     >
       {/* Top Row: Habit name and options */}
-      <div className="habit-top-row mb-1.5 flex h-[34px] items-center justify-between pr-1 pl-3.5">
+      <div className="habit-top-row mb-1.5 flex h-8.5 items-center justify-between pr-1 pl-3.5">
         <div className="top-row-left-side flex items-center gap-2">
           <div>
             <Checkbox
@@ -129,7 +129,7 @@ const Habit = ({ data: habit }: { data: Habit }) => {
               />
             ) : (
               // habit name
-              <div className="flex w-full items-center text-lg font-medium text-[#fff]">
+              <div className="flex w-full items-center text-lg font-medium text-white">
                 <span
                   className="max-w-60 cursor-pointer truncate"
                   onClick={() => setRenameHabitMode(true)}
@@ -148,7 +148,7 @@ const Habit = ({ data: habit }: { data: Habit }) => {
       <CompletionGraph data={habit.completedDates} />
 
       {/* Bottom Row: Stats */}
-      <div className="mt-1.5 flex w-full items-center justify-between pl-3.5">
+      <div className="mt-1.75 flex w-full items-center justify-between pl-3.5">
         <div className="text-muted text-xs">
           <span className="font-bold">
             {getMonthStats(habit.completedDates)}
@@ -194,7 +194,7 @@ const CompletionGraph = ({
         <div className="flex h-3.5 items-center"></div>
       </div>
       <ScrollToEndX className="no-scrollbar">
-        <div className="flex h-[116px] w-[900px] flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-0.75">
+        <div className="flex h-29 w-225 flex-col-reverse flex-wrap-reverse items-end gap-x-0 gap-y-0.75">
           {Array.from({ length: 7 - lastSatIndex }, (_, i) => (
             <div key={i} className="h-3.5"></div>
           ))}

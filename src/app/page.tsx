@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 import { auth } from "~/server/better-auth";
 import { getSession } from "~/server/better-auth/server";
 import { HydrateClient } from "~/trpc/server";
-import HabitsContainer from "./_components/HabitsContainer";
-import QuickMenu from "./_components/QuickMenu";
+import HabitsContainer from "./features/HabitsContainer";
+import QuickActionMenu from "./_components/QuickActionsMenu";
 import { Button } from "./_components/Button";
 import type { User } from "better-auth";
 import {
@@ -14,10 +14,10 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./_components/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "./_components/avatar";
+} from "./_components/DropdownMenu";
+import { Avatar, AvatarFallback, AvatarImage } from "./_components/Avatar";
 import { Toaster } from "sonner";
-import SignedOutPage from "./_components/SignedOutPage";
+import SignedOutPage from "./features/SignedOutPage";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 
@@ -44,8 +44,8 @@ export default async function Home() {
     <HydrateClient>
       <Toaster position="top-center" />
       <main className="min-h-screen bg-[#020416]">
-        <nav className="flex h-[120px] flex-col">
-          <div className="h-[90px] w-full bg-linear-to-b from-[#121844] to-[#020416] text-[#fff]">
+        <nav className="flex h-30 flex-col">
+          <div className="h-22.5 w-full bg-linear-to-b from-[#121844] to-[#020416] text-white">
             <div className="mx-auto max-w-md">
               <div className="flex items-center justify-between p-5">
                 <div className="flex items-end gap-3">
@@ -72,8 +72,7 @@ export default async function Home() {
                 )}
               </div>
 
-              {session?.user && <QuickMenu />}
-              {/* <QuickMenu /> */}
+              {session?.user && <QuickActionMenu />}
             </div>
           </div>
         </nav>

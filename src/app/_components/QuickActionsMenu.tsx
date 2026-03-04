@@ -17,7 +17,7 @@ import { api } from "~/trpc/react";
 import { toast } from "sonner";
 import Input from "./Input";
 
-const QuickMenu = () => {
+const QuickActionMenu = () => {
   const utils = api.useUtils();
 
   const createHabit = api.habitsRouter.createHabit.useMutation({
@@ -51,7 +51,7 @@ const QuickMenu = () => {
   );
 };
 
-export default QuickMenu;
+export default QuickActionMenu;
 
 const CreateDialog = ({
   onClick: handleCreate,
